@@ -1,0 +1,40 @@
+html,body{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height:100%;
+	width:100%;
+	background: url("../imgs/background.png") no-repeat;
+	background-size:cover;
+
+}
+
+.des{
+	display: flex;
+	justify-content: space-between;
+	width: 590px;
+	/*height: 200px;*/
+}
+.des>img{
+	height: 48px;
+	width: 18px;
+	margin: 6px;
+	flex-shrink: 0;
+}
+.des>div{
+	width: 532px;
+	letter-spacing: 1px;
+	color: white;
+}
+p{
+	line-height:26px;
+	text-align:justify;
+
+}
+.kxmt-img{
+	float: right;
+	margin-top:80px;
+}
+.mt40{
+	margin-top: 40px;
+}

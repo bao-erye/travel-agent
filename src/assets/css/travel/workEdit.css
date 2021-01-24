@@ -1,0 +1,376 @@
+html,body{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: auto !important;
+	width: 100%;
+	overflow-x: hidden;
+}
+::-webkit-input-placeholder { 
+	text-align: right;
+    color: #bdc5c8;
+    letter-spacing: 1px !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+}
+
+.work-con{
+	width: 710px;
+}
+.title{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	margin:110px 0;
+	letter-spacing: 2px;
+}
+.bm-notice{
+	display: flex;
+	flex-direction: column;
+	font-size: 12px;
+	margin-bottom: 42px;
+}
+.t1{
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+.t2{
+	font-size: 12px;
+	color: #A8B1B8;
+	margin-bottom: 12px;
+	margin-left: 3px;
+}
+.c1{
+	color: #98A3A7;
+}
+.c2{
+	color: #ACB9BF;
+}
+.c3{
+	font-size: 11px;
+	color:#AEB8B9;
+}
+.c4{
+	color: #6BC8F3;
+}
+.type{
+	display: flex;
+	padding-left: 10px;
+	margin-bottom: 10px;
+}
+.type1{
+	display: flex;
+	padding-left: 10px;
+	margin:25px 0 25px 0;	
+}
+.radioDiv{
+  font-size: 13px;
+  color: #57667D;
+}
+
+.radioDiv input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.radioDiv input[type="radio"] + .radioDiv-label:before {
+  content: '';
+  background: #f4f4f4;
+  border-radius: 100%;
+  border: 2px solid #021E4E;
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  position: relative;
+  top:-3px;
+  margin-right: 1em;
+  vertical-align: top;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+}
+.radioDiv input[type="radio"]:checked + .radioDiv-label:before {
+  background-color: #021E4E;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+.radioDiv input[type="radio"]:focus + .radioDiv-label:before {
+  outline: none;
+  border-color: #021E4E;
+}
+.radioDiv input[type="radio"]:disabled + .radioDiv-label:before {
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+  border-color: #021E4E;
+  background: #b4b4b4;
+}
+.radioDiv input[type="radio"] + .radioDiv-label:empty:before {
+  margin-right: 0;
+}
+.hd{
+	font-size: 14px;
+}
+.inpText{
+	position: absolute;
+	left: 5px;
+	top: 26px;
+	font-size: 14px;
+}
+.inpText-on{
+	position: absolute;
+	left: 5px;
+	top: 0;
+	font-size: 11px;
+}
+input{
+	height: 40px;
+	width: 100%;
+	font-size: 14px;
+}
+textarea:focus{
+	box-shadow: none !important;
+	outline:none !important;
+}
+.w0{
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: space-between;
+	height: 55px;
+	width: 300px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w01{
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: space-between;
+	height: 55px;
+	width: 325px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w02{
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: space-between;
+	height: 55px;
+	width: 360px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+
+.w1{
+	display: flex;
+	flex-direction: column-reverse;
+	height: 55px;
+	width: 385px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w1-nb{
+	display: flex;
+	justify-content: space-between;
+	height: 55px;
+	width: 385px;
+}
+.w12{
+	display: flex;
+	flex-direction: column-reverse;
+	height: 55px;
+	width: 245px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w2{
+	display: flex;
+	flex-direction: column-reverse;
+	height: 55px;
+	width: 295px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w3{
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	height: 55px;
+	width: 125px;
+	padding:0 5px;
+	margin-right: 15px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w4{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-sizing: border-box;
+	height: 55px;
+	width: 220px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+.w5{
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: space-between;
+	height: 55px;
+	width: 710px;
+	padding:0 5px;
+	border-bottom: 1px solid #dfe4e8;
+}
+
+.down-img{
+	position: absolute;
+	right: 5px;
+	top: 26px;
+	height: 17px;
+	width: 17px;
+}
+
+.down-img1{
+	position: absolute;
+	right: 5px;
+	top: 13px;
+	height: 17px;
+	width: 17px;
+}
+
+.intro{
+	position: relative;
+	margin: 60px 0 30px 0;
+	width: 100%;
+	
+}
+.int{
+	position: absolute;
+	top:-12px;
+	left:5px;
+	height: 20px;
+	line-height: 20px;
+	background: white;
+	letter-spacing: 2px;
+}
+.int1{
+	position: absolute;
+	top:-24px;
+	left:5px;
+	font-size: 14px;
+	color: #41506F;
+}
+.fn{
+	position: absolute;
+	top:-24px;
+	right: 5px;
+	font-size: 11px;
+	color: #dfe4e8;
+}
+
+.tar{
+	box-sizing: border-box;
+	height: 200px;
+	width: 100%;
+	line-height: 20px;
+	padding: 26px 15px;
+	resize:none;
+	border:1px solid #dfe4e8;
+}
+.upload{
+	height: 80px;
+	width: 100%;
+}
+.xz{
+	font-size: 14px;
+	width: 360px;
+	line-height: 23px;
+}
+.xzt{
+	font-size: 15px;
+	font-weight: bold;
+}
+.fg{
+	margin-top: 30px;
+	border-bottom: 1px solid #dfe4e8; 
+}
+.fg1{
+	margin:10px 0 40px 0;
+	border-bottom: 1px solid #dfe4e8; 
+}
+.res{
+	margin:30px 0;
+}
+.res1{
+	margin:10px 0 30px 0;
+}
+.pd5{
+	padding: 0 10px;
+}
+.toal-box{
+	display: none;
+	position: absolute;
+    left: 0;
+    top:0;
+    right: 0;
+    bottom: 0;
+    /*height: 100%;*/
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+}
+.toal{
+	height: 220px;
+	width: 400px;
+    position: absolute; 
+    left: 50%; 
+    top: 50%;   
+    margin-top: -110px;    /* 高度的一半 */  
+    margin-left: -200px;   
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+	padding: 30px 47px;
+	background: #001E50;
+	z-index:10000;
+}
+.toal-top{
+	display: flex;
+}
+.del-y{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 52px;
+	width: 52px;
+	border-radius: 100%;
+	background:white;
+}
+.del-img{
+	height: 22px;
+	width: 22px;
+}
+.del-text{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 52px;
+	margin-left: 56px;
+	color: white;
+	font-size: 15px;
+	letter-spacing: 2px;
+}
+.del{
+	height: 37px;
+	width: 100%;
+	border-radius: 20px;
+	background: white;
+	color: black;
+}
+.cancel{
+	height: 37px;
+	width: 100%;
+	border-radius: 20px;
+	background: #01B0F1;
+	color: white;
+}
