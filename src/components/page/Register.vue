@@ -18,15 +18,6 @@
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="password1">
-                    <el-input
-                        type="password"
-                        placeholder="请再次输入上面的密码"
-                        v-model="password"
-                    >
-                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
-                    </el-input>
-                </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">注册</el-button>
                 </div>
@@ -63,12 +54,12 @@ export default {
             this.$refs.login.validate(valid => {
                 if (valid) {
                     that.$message = this.$message
-                    this.api.login({name:this.param.name,password:this.param.password}).then(res => {
+                    this.api.register({name:this.param.name,password:this.param.password}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
-                            localStorage.setItem('userInfo', JSON.stringify(res.data));
-                            that.$router.push('/dashboard');
-                            that.$message.success('登录成功');
+                            that.$message.success('注册成功,你可以登录啦');
+                            that.$router.push('/login');
+                            
                         }else{
                             that.$message.error(res.message);
                         }

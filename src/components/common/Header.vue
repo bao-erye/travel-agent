@@ -41,21 +41,23 @@ export default {
             collapse: false,
             fullscreen: false,
             init_avatar: require('../../assets/img/img.jpg'),
-            name: 'linxin',
+            name: 'XXX',
             message: 2
         };
     },
     computed: {
         username() {
-            let username = JSON.parse(localStorage.getItem('userInfo')).nickname;
+            let username = JSON.parse(localStorage.getItem('userInfo')).name;
             return username ? username : this.name;
         },
         avatar() {
-            let avatar = JSON.parse(localStorage.getItem('userInfo')).avatar;
-            return avatar ? this.base_api_url + avatar : this.init_avatar;
+            let avatar = JSON.parse(localStorage.getItem('userInfo')).iconUrl;
+            return avatar ? this.base_api_url + "image/upload/" + avatar : this.init_avatar;
         }
     },
-    created() {},
+    created() {
+
+    },
     methods: {
         // 用户名下拉菜单选择事件
         handleCommand(command) {

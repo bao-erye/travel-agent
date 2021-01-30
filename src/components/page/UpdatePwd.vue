@@ -3,18 +3,18 @@
         <div class="ms-login">
             <div class="ms-title">修改密码</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
-                <el-form-item prop="password">
+                <el-form-item prop="name">
+                    <el-input v-model="param.name" placeholder="请输入用户名" type="password">
+                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="newPwd">
                     <el-input v-model="param.newPwd" placeholder="请输入新密码" type="password">
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="password1">
-                    <el-input v-model="password" placeholder="请再次输入新密码" type="password">
-                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
-                    </el-input>
-                </el-form-item>
                 <el-form-item prop="question1">
-                    <el-input v-model="param.question1" disabled="true">
+                    <el-input v-model="param.question1" :disabled="true">
                         <el-button slot="prepend" icon="el-icon-key"></el-button>
                     </el-input>
                 </el-form-item>
@@ -24,7 +24,7 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="question2">
-                    <el-input v-model="param.question2" disabled="true">
+                    <el-input v-model="param.question2" :disabled="true">
                         <el-button slot="prepend" icon="el-icon-key"></el-button>
                     </el-input>
                 </el-form-item>
@@ -50,7 +50,8 @@ export default {
     data: function() {
         return {
             param: {
-                newPwd: '',
+                name:'',
+                newPwd:'',
                 question1:'你父亲的姓是什么',
                 answer1:'',
                 question2:'你母亲的姓是什么',
@@ -60,13 +61,13 @@ export default {
             rules: {
                 name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-                password1: [{ required: true, message: '请再次输入密码', trigger: 'blur' }],
                 answer1: [{ required: true, message: '请输入答案', trigger: 'blur' }],
                 answer2: [{ required: true, message: '请输入答案', trigger: 'blur' }],
             },
         };
     },
     created(){
+
     },
     methods: {
         submitForm() {
@@ -74,18 +75,18 @@ export default {
             this.$refs.login.validate(valid => {
                 if (valid) {
                     that.$message = this.$message
-                    this.api.login({name:this.param.name,password:this.param.password}).then(res => {
+                    this.api.updatePwd({name:this.param.name,newPwd:this.param.newPwd,answer1:this.param.answer1,answer2:this.param.answer2}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
-                            localStorage.setItem('userInfo', JSON.stringify(res.data));
-                            that.$router.push('/dashboard');
-                            that.$message.success('登录成功');
+                            that.$message.success('修改成功，现在去登录吧');
+                            localStorage.removeItem('userInfo');
+                            that.$router.push('/login');
                         }else{
                             that.$message.error(res.message);
                         }
                     })
                 } else {
-                    this.$message.error('请输入账号和密码');
+                    this.$message.error('请输入正确格式内容');
                     return false;
                 }
             });

@@ -8,28 +8,27 @@
         <div class="container">
             <!-- 查询控件 -->
             <div class="handle-box">
-                <el-button style="margin-left:0" type="primary" icon="el-icon-lx-add" class="handle-del" @click="handleAdd"
-                    >新增产品
+                <el-button style="margin-left:0" type="primary" icon="el-icon-lx-add" class="handle-del" @click="handleAdd" >新增产品
                 </el-button>
-                <el-select v-model="show_state" placeholder="显示全部" class="handle-select mr10" @change="getShowState">
-                    <el-option key="1" label="显示全部" value="-1"></el-option>
-                    <el-option key="2" label="上架中" value="1"></el-option>
-                    <el-option key="3" label="已下架" value="0"></el-option>
+                <el-select v-model="goodsState" placeholder="显示全部" class="handle-select mr10" @change="getShowState">
+                    <el-option key="1" label="显示全部" value=""></el-option>
+                    <el-option key="2" label="未发布" value="1"></el-option>
+                    <el-option key="3" label="已发布" value="2"></el-option>
+                    <el-option key="4" label="已上架" value="3"></el-option>
+                    <el-option key="4" label="已下架" value="4"></el-option>
                 </el-select>
-
                 <el-input placeholder="请输入内容" v-model="search_key_word" @input="get_key" class="input-with-select" clearable>
-                    <el-select style="width: 110px;" v-model="searchType" slot="prepend" placeholder="产品编号" @change="getSearchType">
+                    <el-select style="width: 110px;" v-model="searchType" slot="prepend" placeholder="产品编号" @change="set_key">
                         <el-option label="产品编号" value="1"></el-option>
                         <el-option label="产品名称" value="2"></el-option>
-                        <el-option label="供应商" value="3"></el-option>
                     </el-select>
-                    <el-button slot="append" icon="el-icon-search" @click="getData"></el-button>
+                    <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                 </el-input>
             </div>
             <!-- 商品列表 -->
             <el-table
                 :data="tableData"
-                v-loading="!load_over"
+                v-loading="false"
                 border
                 class="table"
                 ref="multipleTable"
@@ -37,84 +36,108 @@
                 @selection-change="handleSelectionChange"
             >
                 <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-                <el-table-column prop="pro_number" label="产品编号" width="120" align="center"></el-table-column>
-                <el-table-column prop="title" label="产品名称" width="160" align="center"></el-table-column>
-                <el-table-column prop="sales_volume" label="销量" width="90" align="center"></el-table-column>
-                <el-table-column prop="eva_score" label="评分" width="60" align="center"></el-table-column>
+                <el-table-column prop="id" label="产品编号" width="120" align="center"></el-table-column>
+                <el-table-column prop="name" label="产品名称" width="160" align="center"></el-table-column>
+                <el-table-column prop="sold" label="销量" width="90" align="center"></el-table-column>
+                <el-table-column prop="score" label="评分" width="60" align="center"></el-table-column>
                 <el-table-column label="封面图" width="120" align="center">
                     <template slot-scope="scope">
                         <el-image
                             style="width: 70px; height: 70px"
                             class="table-td-thumb"
-                            :src="scope.row.avatar"
+                            :src="scope.row.coverImageUrl"
                             :preview-src-list="[scope.row.avatar]"
                         ></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column prop="provider" label="供应商" width="120" align="center"></el-table-column>
-                <el-table-column label="服务保障" width="120" align="center">
+                <!-- <el-table-column prop="provider" label="供应商" width="120" align="center"></el-table-column> -->
+                <el-table-column label="服务保障" width="120" align="center">  <!--service_ensure-->
                     <template slot-scope="scope">
-                        <div v-for="item in scope.row.securityList" :key="item">{{ item }}</div>
+                        <!-- <div v-for="item in scope.row.securityList" :key="item">{{ item }}</div> -->
+                        {{scope.row.serviceEnsure}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="trip_days" label="行程天数" width="90" align="center"></el-table-column>
+                <el-table-column prop="days" label="行程天数" width="90" align="center"></el-table-column>
                 <el-table-column label="详情图片" width="240" align="center">
                     <template slot-scope="scope">
-                        <el-carousel :interval="4000" type="card" height="70px" indicator-position="none">
+                        <!-- <el-carousel :interval="4000" type="card" height="70px" indicator-position="none">
                             <el-carousel-item v-for="(img, i) in scope.row.imgList" :key="i">
                                 <el-image style="width: 120px; height: 70px" class="table-td-thumb" :src="img"></el-image>
                             </el-carousel-item>
-                        </el-carousel>
+                        </el-carousel> -->
+                        <el-image
+                            style="width: 70px; height: 70px"
+                            class="table-td-thumb"
+                            :src="scope.row.detailImageUrl"
+                        ></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column label="交通类型" width="120" align="center">
+                <el-table-column label="交通类型" width="120" align="center"><!--transport-->
                     <template slot-scope="scope">
-                        <div v-for="item in scope.row.trafficList" :key="item">{{ item }}</div>
+                        <!-- <div v-for="item in scope.row.trafficList" :key="item">{{ item }}</div> -->
+                        {{scope.row.transport}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="address" width="120" label="出发地/目的地" align="center">
-                    <template slot-scope="scope">{{ scope.row.start_city }}/{{ scope.row.end_city }}</template>
+                <el-table-column prop="begin_place" width="120" label="出发地/目的地" align="center">
+                    <template slot-scope="scope">{{ scope.row.beginPlace }}/{{ scope.row.endPlace }}</template>
                 </el-table-column>
-                <el-table-column prop="through_address" width="120" label="途径地" align="center">
+                <el-table-column prop="across_place" width="120" label="途径地" align="center">
                     <template slot-scope="scope">
-                        <div v-for="item in scope.row.through_address" :key="item">{{ item }}</div>
+                        <!-- <div v-for="item in scope.row.through_address" :key="item">{{ item }}</div> -->
+                        {{scope.row.acrossPlace}}
                     </template>
                 </el-table-column>
                 <el-table-column label="价格/结算价格/类型" width="180" align="center">
                     <template slot-scope="scope">
-                        <div>￥{{ scope.row.adult_price }}/￥900//成人</div>
-                        <div>￥{{ scope.row.child_price }}/￥500//儿童</div>
-                        <div>￥300/￥260//幼童</div>
+                        <div>￥{{ scope.row.adultPrice }}/成人</div>
+                        <div>￥{{ scope.row.childPrice }}/儿童</div>
                     </template>
                 </el-table-column>
                 <el-table-column label="有效日期" width="120" align="center">
                     <template slot-scope="scope">
-                        {{ scope.row.start_time }}
+                        {{ scope.row.earliestDate }}
                         <br />
                         至
                         <br />
-                        {{ scope.row.end_time }}
+                        {{ scope.row.latestDate }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="status" width="120" label="状态" align="center">
                     <template slot-scope="scope">
-                        <el-tag :type="scope.row.status ? 'success' : 'danger'">{{ scope.row.status ? '上架中' : '已下架' }} </el-tag>
+                        <el-tag v-if="scope.row.state==1" >未发布</el-tag>
+                        <el-tag v-else-if="scope.row.state==2" type="warning">已发布</el-tag>
+                        <el-tag v-else-if="scope.row.state==3" type="success">上架中</el-tag>
+                        <el-tag v-else-if="scope.row.state==4" type="info">已下架</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="150" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" style="color:#67C23A" icon="el-icon-s-release" @click="dateVisible = true">发布</el-button>
-                        <el-button
+                        <!-- 发布操作 -->
+                        <el-button v-if="scope.row.state == 1 || scope.row.state == 4" type="text" style="color:#67C23A" icon="el-icon-s-release" @click="releaseGoods(scope.row.id)">发布</el-button>
+                        <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-s-release">发布</el-button>
+                        <!-- <el-button
                             type="text"
                             style="color:#409EFF"
                             :icon="scope.row.status ? 'el-icon-bottom' : 'el-icon-top'"
                             @click="handleTp(scope.row.status)"
                             >{{ scope.row.status ? '下架' : '上架' }}
+                        </el-button> -->
+                        <!-- 下架操作 -->
+                        <el-button v-if="scope.row.state == 3"  type="text" style="color:#409EFF" icon="el-icon-bottom" @click="offGoods(scope.row.id)">下架</el-button>
+                        <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-bottom">下架</el-button>
+                        <!-- 编辑操作 -->
+                        <el-button v-if="scope.row.state==1 || scope.row.state == 4" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" style="color:#E6A23C">编辑 </el-button>
+                        <el-button v-else disabled type="text" icon="el-icon-edit" style="color:#909399">编辑 </el-button>
+                        <!-- 删除操作 -->
+                        <el-button 
+                            v-if="scope.row.state == 1 || scope.row.state == 4" 
+                            type="text" 
+                            icon="el-icon-delete" 
+                            class="red" 
+                            @click="deleteGoods(scope.row.id)"
+                            style="color:#F56C6C">删除
                         </el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)" style="color:#E6A23C">编辑 </el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)"
-                        style="color:#F56C6C"
-                            >删除
+                        <el-button v-else disabled type="text" icon="el-icon-delete" class="red" style="color:#909399">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -123,8 +146,8 @@
                 <el-pagination
                     background
                     layout="total, prev, pager, next"
-                    :current-page="query.pageIndex"
-                    :page-size="query.pageSize"
+                    :current-page="query.current"
+                    :page-size="query.size"
                     :total="pageTotal"
                     @current-change="handlePageChange"
                 ></el-pagination>
@@ -138,16 +161,16 @@
                     <el-form ref="form" :model="form" label-width="130px" label-position="right">
                         <el-form-item label="行程归类">
                             <template>
-                                <el-checkbox-group v-model="securityList" size="small">
-                                    <el-checkbox-button v-for="(s, i) in xcgl" :label="s" :key="i">{{ s }} </el-checkbox-button>
-                                </el-checkbox-group>
+                                <!-- <el-checkbox-group v-model="securityList" size="small">
+                                    <el-checkbox-button v-for="(s, i) in goodsTypeList" :label="s" :key="i">{{ s }} </el-checkbox-button>
+                                </el-checkbox-group> -->
+                                <el-radio-group v-model="addForm.type" size="small">
+                                    <el-radio-button vv-for="(s, i) in goodsTypeList" :label="s" :key="i+1"></el-radio-button>
+                                </el-radio-group>
                             </template>
                         </el-form-item>
-                        <!-- <el-form-item label="产品编号">
-                            <el-input v-model="form.pro_number" @change="getProNumber"></el-input>
-                        </el-form-item> -->
                         <el-form-item label="产品名称">
-                            <el-input v-model="form.title" @change="getProTitle"></el-input>
+                            <el-input v-model="addForm.name" @change="getProTitle"></el-input>
                         </el-form-item>
                         <!-- <el-form-item label="供应商">
                             <el-input v-model="form.provider" @change="getProvider"></el-input>
@@ -155,18 +178,19 @@
                         <el-form-item label="封面图">
                             <el-upload
                                 class="avatar-uploader"
+                                name="upload"
                                 :action="uploadImgUrl"
                                 :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload"
+                                :on-success="handleCoverImageSuccess"
+                                :before-upload="beforeImageUpload"
                             >
-                                <img v-if="form.avatar" :src="form.avatar" class="avatar" />
+                                <img v-if="coverImageUrl" :src="coverImageUrl" class="avatar" />
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
                         <el-form-item label="出发地">
                             <template>
-                                <el-select v-model="form.start_city_id" filterable placeholder="请选择" @change="getStartCity">
+                                <!-- <el-select v-model="form.start_city_id" filterable placeholder="请选择" @change="getStartCity">
                                     <el-option
                                         v-for="item in travelParams.cityList"
                                         :key="item.value"
@@ -174,12 +198,24 @@
                                         :value="item.value"
                                     >
                                     </el-option>
-                                </el-select>
+                                </el-select> -->
+                                <!-- option用来指定数据源 -->
+                                <!-- props指定配置对象 -->
+                                <!-- model选中项绑定值 -->
+                                <el-cascader
+                                style="width:100%;"
+                                v-model="addForm.beginPlace"
+                                :options="cityData"
+                                :props="cascaderProps"
+                                clearable
+                                popper-class="addressCascader"
+                                >
+                                </el-cascader>
                             </template>
                         </el-form-item>
                         <el-form-item label="目的地">
                             <template>
-                                <el-select v-model="form.end_city_id" filterable placeholder="请选择" @change="getEndCity">
+                                <!-- <el-select v-model="form.end_city_id" filterable placeholder="请选择" @change="getEndCity">
                                     <el-option
                                         v-for="item in travelParams.cityList"
                                         :key="item.value"
@@ -187,7 +223,16 @@
                                         :value="item.value"
                                     >
                                     </el-option>
-                                </el-select>
+                                </el-select> -->
+                                <el-cascader
+                                style="width:100%;"
+                                v-model="addForm.endPlace"
+                                :options="cityData"
+                                :props="cascaderProps"
+                                clearable
+                                popper-class="addressCascader"
+                                >
+                                </el-cascader>
                             </template>
                         </el-form-item>
                         <el-form-item label="途径地">
@@ -394,50 +439,7 @@
                 <el-tab-pane label="注意事项" name="five">
                     <quill-editor ref="myTextEditor" v-model="content4" :options="editorOption"></quill-editor>
                 </el-tab-pane>
-                <!-- <el-tab-pane label="费违约责任" name="six">
-                    <el-card class="box-card">
-                        <div slot="header" class="clearfix">
-                            <span>旅行社违约责任</span>
-                        </div>
-                        <div class="text item">
-                            下单后，提前7天撤单，退回全款，不扣违约金，提前2天撤单，违约金扣款团款的10%，提前 1天撤单，违约金扣款团款的20%。
-                        </div>
-                    </el-card>
-                    <el-card class="box-card" style="margin-top:10px">
-                        <div slot="header" class="clearfix">
-                            <span>游客违约责任</span>
-                        </div>
-                        <div class="text item">
-                            下单后，提前（供应商填写）天撤单，违约金扣款团款的<el-input
-                                style="width:60px;margin:0 5px"
-                                value="30"
-                            ></el-input
-                            >%；
-                        </div>
-                        <div class="text item" style="margin-top:6px">
-                            提前<el-input style="width:60px;margin:0 5px" value="30"></el-input>天撤单，违约金扣款团款的<el-input
-                                style="width:60px;margin:0 5px"
-                                value="30"
-                            ></el-input
-                            >%；
-                        </div>
-                        <div class="text item" style="margin-top:6px">
-                            提前<el-input style="width:60px;margin:0 5px" value="3"></el-input>天撤单，违约金扣款团款的<el-input
-                                style="width:60px;margin:0 5px"
-                                value="30"
-                            ></el-input
-                            >%。
-                        </div>
-                        <div class="text item" style="margin-top:10px">
-                            <el-input type="textarea" :rows="6" v-model="wyzr"></el-input>
-                        </div>
-                    </el-card>
-                </el-tab-pane>
-                <el-tab-pane label="特别提示" name="serven">
-                    <quill-editor ref="myTextEditor" v-model="content6" :options="editorOption"></quill-editor>
-                </el-tab-pane> -->
             </el-tabs>
-
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">保存</el-button>
@@ -452,6 +454,7 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
 import { quillEditor } from 'vue-quill-editor';
+import cityData from '../common/city-data.js';
 
 export default {
     name: 'basetable',
@@ -460,6 +463,39 @@ export default {
     },
     data() {
         return {
+            userInfo: {},// 用户信息
+            query: {
+                supplierId: '',
+                goodsId: '',
+                name: '',
+                state: '',
+                current: 1,
+                size: 4
+            },
+            // query: {
+            //     pro_number: '',
+            //     provider: '',
+            //     title: '',
+            //     status: '',
+            //     pageIndex: 1,
+            //     pageSize: 5
+            // },
+            pageTotal: 0,//商品总数
+            goodsState: '',//商品状态查询条件
+            search_key_word: '',// 搜索内容
+            searchType: '1',//搜索类型
+            goodsTypeList: ['国内游','周边游','国外游','特价游'],
+            serviceEnsureList: ['无自费','无购物','及时确认','安心游','如实描述'],
+            transportList: ['大巴','高铁','飞机','邮轮'],
+            addForm: {},// 添加商品表单数据
+            uploadImgUrl: '',// 图片上传地址
+            coverImageUrl: '',// 上传所选择的图片
+            cityData,// 城市数据
+            cascaderProps: {
+                value: 'code',
+                label: 'name',
+                children: 'children'
+            },// 选择器参数对象
             dateVisible: false,
             ts:
                 '1-新婚蜜月鲜花大床，全程0购物 轻松游云南！\n' +
@@ -492,17 +528,11 @@ export default {
             xcgl: ['周边游', '国内游', '出境游', '特价游'],
             yljd: ['东湖', '南湖', '泰国', '新加坡', '印度尼西亚'],
             // tjd: ['武汉', '南京', '合肥', '成都'],
-            query: {
-                pro_number: '',
-                provider: '',
-                title: '',
-                status: '',
-                pageIndex: 1,
-                pageSize: 5
-            },
-            show_state: '',
-            searchType: '',
-            search_key_word: '',
+            
+            
+            
+            
+            
             tableData: [],
             securityList: ['无购物'],
             themeList: ['古镇水乡'],
@@ -517,7 +547,7 @@ export default {
             multipleSelection: [],
             delList: [],
             editVisible: false,
-            pageTotal: 0,
+            
             form: {},
             idx: -1,
             id: -1,
@@ -527,22 +557,158 @@ export default {
             dialogImageUrl: '',
             dialogVisible: false,
             detailImgList: [],
-            uploadImgUrl: '',
+            
             imageUrl: '',
             datePickerShow: true,
             feeProps: {}
         };
     },
     created() {
-        if (JSON.parse(localStorage.getItem('travelParams'))) {
-            this.travelParams = JSON.parse(localStorage.getItem('travelParams'));
-        } else {
-            this.initparams();
-        }
-        this.getData();
-        this.uploadImgUrl = this.base_api_url + 'web/uploadImg';
+        // if (JSON.parse(localStorage.getItem('travelParams'))) {
+        //     this.travelParams = JSON.parse(localStorage.getItem('travelParams'));
+        // } else {
+        //     this.initparams();
+        // }
+        // this.getData();
+        this.uploadImgUrl = this.base_api_url + 'goods/upload';
+        this.userInfo = JSON.parse(localStorage.getItem('userInfo'));// 获取供应商信息
+        this.query.supplierId = this.userInfo.id;
+        this.getListByQuery();// 获取商品列表
     },
     methods: {
+        // 根据查询条件查询商品列表
+        getListByQuery(){
+            var that = this
+            this.api.getListByQuery(that.query).then(res => {
+                        console.log(res)
+                        if(res.code=="200"){
+                            that.$message.success('成功获取商品列表');
+                            that.tableData = res.data.records;
+                            that.pageTotal = res.data.total;
+                        }else{
+                            that.$message.error(res.message);
+                        }
+                    })
+        },
+        // 分页导航
+        handlePageChange(val) {
+            this.$set(this.query, 'current', val);
+            this.getListByQuery();
+        },
+        // 设置商品状态查询条件
+        getShowState(e) {
+            this.query.state = e;
+            this.getListByQuery();
+        },
+        // 设置搜索内容
+        get_key(e) {
+            this.search_key_word = e;
+        },
+        // 选择器变化事件
+        set_key(e) {
+            console.log("搜索类型"+e);
+            this.searchType = e;
+        },
+        // 搜索点击按钮事件
+        search() {
+            this.initQuery();
+            if(this.searchType == 1){
+                this.query.goodsId = this.search_key_word;
+            }else if(this.searchType == 2){
+                this.query.name = this.search_key_word;
+            }
+            this.getListByQuery();
+        },
+        initQuery() {
+            this.query.goodsId = '';
+            this.query.name = '';
+        },
+        // 发布商品
+        releaseGoods(id) {
+            var that = this;
+            var msg = '谨慎发布，发布后，商品将会提交给管理员审核，审核通过后会上架商品。因此内容不能修改、编辑，不能随意删除、不能随意下架';
+            var tp = '发布提醒';
+            this.$confirm(msg, tp, {
+                distinguishCancelAndClose: true,
+                type: 'warning',
+                confirmButtonText: '确认',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this.api.updateState({goodsId:id,state:'2'}).then(res => {
+                    console.log(res)
+                    if(res.code=="200"){
+                        that.$message.error("成功发布商品")
+                        that.getListByQuery()
+                    }else{
+                        that.$message.error("发布商品失败")
+                    }
+                })
+            })
+        },
+        // 下架商品
+        offGoods(id) {
+            var that = this;
+            var msg = '谨慎下架，下架后，商品将不会显示给客户。';
+            var tp = '下架提醒';
+            this.$confirm(msg, tp, {
+                distinguishCancelAndClose: true,
+                type: 'warning',
+                confirmButtonText: '确认',
+                cancelButtonText: '取消'
+            }).then(() => {
+                this.api.updateState({goodsId:id,state:'4'}).then(res => {
+                    console.log(res)
+                    if(res.code=="200"){
+                        that.$message.success("成功下架商品")
+                        that.getListByQuery()
+                    }else{
+                        that.$message.error("下架商品失败")
+                    }
+                })
+            })
+        },
+        // 删除商品
+        deleteGoods(id) {
+            var that = this;
+            var msg = '谨慎删除，删除后，商品信息将不会保留。';
+            var tp = '删除提醒';
+            this.$confirm(msg, tp, {
+                distinguishCancelAndClose: true,
+                type: 'warning',
+                confirmButtonText: '确认',
+                cancelButtonText: '取消'
+            }).then(() => {
+                that.api.deleteGoods({goodsId:id}).then(res => {
+                    console.log(res)
+                    if(res.code=="200"){
+                        that.$message.success("成功删除商品")
+                        that.getListByQuery()
+                    }else{
+                        that.$message.error("商品删除失败")
+                    }
+                })
+            })
+        },
+        // 封面图片上传成功
+        handleCoverImageSuccess(res, file) {
+            console.log(res)
+            this.addForm.coverImageUrl = res.data
+            this.coverImageUrl = URL.createObjectURL(file.raw);
+        },
+        // 封面图片上传之前
+        beforeImageUpload(file) {
+            const isJPG = file.type === 'image/jpeg';
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isJPG) {
+            this.$message.error('上传头像图片只能是 JPG 格式!');
+            }
+            if (!isLt2M) {
+            this.$message.error('上传头像图片大小不能超过 2MB!');
+            }
+            return isJPG && isLt2M;
+        },
+
         closeFee() {
             this.datePickerShow = false;
         },
@@ -561,43 +727,8 @@ export default {
         onClick(e) {
             console.log(e);
         },
-        handleTp(state) {
-            var msg = '';
-            var tp = '上架提醒';
-            if (state == 0) {
-                msg = '谨慎上架，上架后，内容不能修改、编辑，不能随意删除、不能随意下架';
-                tp = '上架提醒';
-            } else {
-                msg = '该产品有未完成订单，请处理后再下架！';
-                tp = '下架提醒';
-            }
-            this.$confirm(msg, tp, {
-                distinguishCancelAndClose: true,
-                type: 'warning',
-                confirmButtonText: '确认',
-                cancelButtonText: '取消'
-            }).then(() => {});
-        },
-        getShowState(e) {
-            this.query.status = e;
-            this.getData();
-        },
-        get_key(e) {
-            console.log(e);
-            this.search_key_word = e;
-        },
-        setKey() {
-            this.initQuery();
-            var e = this.searchType || 1;
-            if (e == 1) this.query.pro_number = this.search_key_word;
-            if (e == 2) this.query.title = this.search_key_word;
-            if (e == 3) this.query.provider = this.search_key_word;
-        },
-        initQuery() {
-            this.query.pro_number = '';
-            this.query.title = '';
-            this.query.provider = '';
-        },
+        
+        
         getData() {
             this.setKey();
             var that = this;
@@ -934,43 +1065,6 @@ export default {
                 })
                 .catch(() => {});
         },
-        // 多选操作
-        handleSelectionChange(val) {
-            var del_ids = val.map(item => {
-                return item.id;
-            });
-            this.multipleSelection = del_ids.join(',');
-            //this.multipleSelection = val;
-        },
-        delAllSelection() {
-            var del_ids = this.multipleSelection;
-            var that = this;
-            // 二次确认删除
-            this.$confirm('确定要删除吗？', '提示', {
-                type: 'warning'
-            })
-                .then(() => {
-                    //this.load_over = false;
-                    console.log(del_ids);
-                    this.api.deleteTPs({ ids: del_ids }).then(res => {
-                        if (res.code == '200') {
-                            that.$message.success('删除成功');
-                            that.getData();
-                            //that.tableData.splice(index, 1);
-                            //that.load_over = true;
-                        }
-                    });
-                })
-                .catch(() => {});
-            // const length = this.multipleSelection.length;
-            // let str = '';
-            // this.delList = this.delList.concat(this.multipleSelection);
-            // for (let i = 0; i < length; i++) {
-            //     str += this.multipleSelection[i].name + ' ';
-            // }
-            // this.$message.error(`删除了${str}`);
-            this.multipleSelection = '';
-        },
         //新增
         handleAdd() {
             this.handleName = '添加产品';
@@ -1026,11 +1120,7 @@ export default {
             //this.$message.success(`修改第 ${this.idx + 1} 行成功`);
             //this.$set(this.tableData, this.idx, this.form);
         },
-        // 分页导航
-        handlePageChange(val) {
-            this.$set(this.query, 'pageIndex', val);
-            this.getData();
-        }
+        
     }
 };
 </script>

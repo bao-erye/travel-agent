@@ -7,20 +7,26 @@
                 <input class="crop-input" type="file" name="image" accept="image/*" @change="setImage"/>
             </div>
             <el-dialog title="裁剪图片" :visible.sync="dialogVisible" width="30%">
-                <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+                <vue-cropper 
+                ref='cropper' 
+                :src="imgSrc" 
+                :ready="cropImage" 
+                :zoom="cropImage" 
+                :cropmove="cropImage" 
+                :outputSize=0.1
+                style="width:100%;height:300px;"></vue-cropper>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="cancelCrop">取 消</el-button>
-                    <el-button type="primary" @click="upAvatar">确 定</el-button>
+                    <el-button type="primary" @click="updateIcon">确 定</el-button>
                 </span>
             </el-dialog>
             <div class="user-info-cont">
-                <div class="user-info-name">{{userInfo.nickname}}</div>
-                <div>超级管理员</div>
+                <div class="user-info-name">{{userInfo.name}}</div>
             </div>
         </div>
         <div class="user-info-list">
             上次登录时间：
-            <span>{{userInfo.last_login_time}}</span>
+            <span>{{userInfo.lastLoginTime}}</span>
         </div>
     </el-card>
 </template>
@@ -32,27 +38,31 @@ export default {
         VueCropper
     },
     data(){
-        return {
-            userInfo : "",
+        return {    
+            userInfo: '',
             imgSrc: '',
-            cropImg: "",
+            cropImg: '',
             dialogVisible: false,
         }
     },
     created(){
-        this.cropImg = this.userInfo.avatar == null?require('../../assets/img/img.jpg'):this.base_api_url +this.userInfo.avatar
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        this.cropImg = this.userInfo.iconUrl == null?require('../../assets/img/img.jpg'): "http://localhost:8083/image/upload/"+this.userInfo.iconUrl
     },
     methods:{
-        upAvatar(){
+        updateIcon(){
             var that = this
             this.dialogVisible = false
-            this.api.upAvatar({avatar:this.cropImg}).then(res => {
+            this.api.updateIcon({id:that.userInfo.id,updateIcon:this.cropImg}).then(res => {
+                console.log(res)
                 if(res.code=="200"){
-                    that.cropImg = that.base_api_url + res.data
+                    that.$message.success("头像修改成功")
+                    this.cropImg = "http://localhost:8083/image/upload/" + res.data.iconUrl
                     var userInfo =JSON.parse(localStorage.getItem("userInfo")) 
-                    userInfo.avatar = that.cropImg
+                    userInfo.iconUrl = res.data.iconUrl
                     localStorage.setItem("userInfo",JSON.stringify(userInfo))
+                }else{
+                    that.$message.error("头像修改失败")
                 }
             })
         },
@@ -76,7 +86,10 @@ export default {
             this.dialogVisible = false;
             this.cropImg = this.userInfo.avatar == null?require('../../assets/img/img.jpg'):this.base_api_url +this.userInfo.avatar;
         },
+        
     }
+    // 
+    
 
 }
 </script>

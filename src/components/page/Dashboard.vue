@@ -4,7 +4,7 @@
             <el-col :span="8">
                 <el-card shadow="hover" class="mgb20" style="height:223px;">
                     <div class="user-info">
-                        <img :src="avatar" class="user-avator" alt />
+                        <img :src="iconUrl" class="user-avator" alt />
                         <div class="user-info-cont">
                             <div class="user-info-name">{{name}}</div>
                             <div>{{role}}</div>
@@ -12,11 +12,9 @@
                     </div>
                     <div class="user-info-list">
                         上次登录时间：
-                        <span>2019-11-01</span>
                     </div>
                     <div class="user-info-list">
-                        上次登录地点：
-                        <span>东莞</span>
+                        {{userInfo.lastLoginTime}}
                     </div>
                 </el-card>
             </el-col>
@@ -27,7 +25,7 @@
                             <div class="grid-content grid-con-1">
                                 <i class="el-icon-lx-people grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5398</div>
+                                    <div class="grid-num">{{numHistory}}</div>
                                     <div>用户访问量</div>
                                 </div>
                             </div>
@@ -38,7 +36,7 @@
                             <div class="grid-content grid-con-2">
                                 <i class="el-icon-s-order grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
+                                    <div class="grid-num">{{numOrder}}</div>
                                     <div>订单总量</div>
                                 </div>
                             </div>
@@ -49,7 +47,7 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-lx-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">122</div>
+                                    <div class="grid-num">{{numInland}}</div>
                                     <div>国内游产品数量</div>
                                 </div>
                             </div>
@@ -62,7 +60,7 @@
                             <div class="grid-content grid-con-4">
                                 <i class="el-icon-orange grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">234</div>
+                                    <div class="grid-num">{{numRim}}</div>
                                     <div>周边游产品数量</div>
                                 </div>
                             </div>
@@ -73,7 +71,7 @@
                             <div class="grid-content grid-con-5">
                                 <i class="el-icon-ship grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">145</div>
+                                    <div class="grid-num">{{numOut}}</div>
                                     <div>出境游产品数量</div>
                                 </div>
                             </div>
@@ -84,7 +82,7 @@
                             <div class="grid-content grid-con-6">
                                 <i class="el-icon-present grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">18</div>
+                                    <div class="grid-num">{{numSpecial}}</div>
                                     <div>特价游产品数量</div>
                                 </div>
                             </div>
@@ -115,61 +113,69 @@ export default {
     name: 'dashboard',
     data() {
         return {
-            userInfo : JSON.parse(localStorage.getItem('userInfo')),
-            name: JSON.parse(localStorage.getItem('userInfo')).nickname,
-            data: [
-                {
-                    name: '2018/09/04',
-                    value: 1083
-                },
-                {
-                    name: '2018/09/05',
-                    value: 941
-                },
-                {
-                    name: '2018/09/06',
-                    value: 1139
-                },
-                {
-                    name: '2018/09/07',
-                    value: 816
-                },
-                {
-                    name: '2018/09/08',
-                    value: 327
-                },
-                {
-                    name: '2018/09/09',
-                    value: 228
-                },
-                {
-                    name: '2018/09/10',
-                    value: 1065
-                }
-            ],
+            userInfo: '',//用户信息
+            name:'',
+            iconUrl: '',
+            role: '您好,供应商',
+            numHistory: 0,
+            numOrder: 0,
+            numInland: 0,
+            numRim: 0,
+            numOut: 0,
+            numSpecial: 0,
+            // data: [
+            //     {
+            //         name: '2018/09/04',
+            //         value: 1083
+            //     },
+            //     {
+            //         name: '2018/09/05',
+            //         value: 941
+            //     },
+            //     {
+            //         name: '2018/09/06',
+            //         value: 1139
+            //     },
+            //     {
+            //         name: '2018/09/07',
+            //         value: 816
+            //     },
+            //     {
+            //         name: '2018/09/08',
+            //         value: 327
+            //     },
+            //     {
+            //         name: '2018/09/09',
+            //         value: 228
+            //     },
+            //     {
+            //         name: '2018/09/10',
+            //         value: 1065
+            //     }
+            // ],
             options: {
                 type: 'bar',
                 title: {
                     text: '最近一周各产品销售图'
                 },
                 xRorate: 25,
-                labels: ['周一', '周二', '周三', '周四', '周五'],
+                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周七'],
                 datasets: [
                     {
                         label: '国内游',
-                        data: [234, 278, 270, 190, 230]
+                        data: [0, 0, 0, 0, 0, 0, 0]
                     },
                     {
                         label: '周边游',
-                        data: [164, 178, 190, 135, 160]
+                        data: [0, 0, 0, 0, 0, 0, 0]
                     },
                     {
                         label: '出境游',
-                        data: [130, 190, 150, 115, 140]
+                        data: [0, 0, 0, 0, 0, 0, 0]
                     },
                     {
                         label: '特价游',
-                        data: [144, 198, 150, 235, 120]
+                        data: [0, 0, 0, 0, 0, 0, 0]
                     }
                 ]
             },
@@ -178,23 +184,24 @@ export default {
                 title: {
                     text: '最近几个月各产品销售趋势图'
                 },
-                labels: ['6月', '7月', '8月', '9月', '10月'],
+                labels: ['X月', 'X月', 'X月', 'X月', 'X月'],
+                labels: [],
                 datasets: [
                     {
                         label: '国内游',
-                        data: [234, 278, 270, 190, 230]
+                        data: [0, 0, 0, 0, 0]
                     },
                     {
                         label: '周边游',
-                        data: [164, 178, 150, 135, 160]
+                        data: [0, 0, 0, 0, 0]
                     },
                     {
                         label: '出境游',
-                        data: [130, 190, 150, 115, 140]
+                        data: [0, 0, 0, 0, 0]
                     },
                     {
                         label: '特价游',
-                        data: [74, 118, 200, 235, 90]
+                        data: [0, 0, 0, 0, 0]
                     }
                 ]
             }
@@ -204,21 +211,16 @@ export default {
         Schart
     },
     created(){
-        // if(localStorage.getItem('userInfo')){
-
-        // }
-        // else
-        //     this.$router.push('/login');
+        this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        this.name = this.userInfo.name
+        this.iconUrl = "http://localhost:8083/image/upload/" + this.userInfo.iconUrl
+        this.getCount() //获取商品数量
+        this.getOrderCount() // 获取订单数量
+        this.getHistoryCount() // 获取访问量
+        this.getChartDay() // 获取一周各商品销量
+        this.getChartMonth() // 获取几月各商品销量
     },
     computed: {
-        avatar(){
-            let avatar = JSON.parse(localStorage.getItem('userInfo')).avatar;
-            return avatar ? this.base_api_url + avatar : this.init_avatar;
-        },
-        role() {
-            return '您好尊敬的供应商'
-            //return this.name === 'admin' ? '超级管理员' : '普通用户';
-        }
     },
     // created() {
     //     this.handleListener();
@@ -232,6 +234,71 @@ export default {
     //     bus.$off('collapse', this.handleBus);
     // },
     methods: {
+        // 获取商品数量
+        getCount() {
+            var that = this
+            this.api.getCount({supplierId:that.userInfo.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    this.numInland = res.data[0]
+                    this.numRim = res.data[1]
+                    this.numOut = res.data[2]
+                    this.numSpecial = res.data[3]
+                }else{
+                    that.$message.error("国内游商品数量获取失败")
+                }
+            })
+        },
+        // 获取订单总量
+        getOrderCount() {
+            var that = this
+            this.api.getOrderCount({supplierId:that.userInfo.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    that.numOrder = res.data
+                }else{
+                    that.$message.error("订单数量获取失败")
+                }
+            })
+        },
+        // 获取访问量
+        getHistoryCount() {
+            var that = this
+            this.api.getHistoryCount({supplierId:that.userInfo.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    that.numHistory = res.data
+                }else{
+                    that.$message.error("访问量获取失败")
+                }
+            })
+        },
+        // 获取一周各商品销量
+        getChartDay() {
+            var that = this
+            this.api.getChartDay({supplierId:that.userInfo.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    this.options.datasets=res.data
+                }else{
+                    that.$message.error("销量获取失败")
+                }
+            })
+        },
+        // 获取一年各商品销量
+        getChartMonth() {
+            var that = this
+            this.api.getChartMonth({supplierId:that.userInfo.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    that.$message.success("成功获取各月各商品销量")
+                    this.options2.labels=res.data.labels
+                    this.options2.datasets=res.data.data
+                }else{
+                    that.$message.error("销量获取失败")
+                }
+            })
+        },
         changeDate() {
             const now = new Date().getTime();
             this.data.forEach((item, index) => {

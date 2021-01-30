@@ -36,7 +36,7 @@ export default {
         return {
             param: {
                 name: '哲宇',
-                password: '1nHAY2qS',
+                password: '12345',
             },
             rules: {
                 name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -52,15 +52,36 @@ export default {
     methods: {
         submitForm() {
             var that = this
+            // 验证输入是否合法
             this.$refs.login.validate(valid => {
                 if (valid) {
                     that.$message = this.$message
+                    // 登录验证
                     this.api.login({name:this.param.name,password:this.param.password}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
                             localStorage.setItem('userInfo', JSON.stringify(res.data));
-                            that.$router.push('/dashboard');
                             that.$message.success('登录成功');
+                            // 登录日志
+                            this.api.loginlog({userId:res.data.id}).then(response => {
+                                console.log(response)
+                                if(res.code=="200"){
+                                    that.$message.success('日志添加成功');
+                                }else{
+                                    that.$message.error(response.message);
+                                }
+                            })
+                            // 写入上次登录时间
+                            this.api.lastLogin({id:res.data.id}).then(response1 => {
+                                console.log(response1)
+                                if (response1.code=="200") {
+                                    that.$message.success('上次登录时间写入成功');
+                                }else {
+                                    that.$message.error(response1.message);
+                                }
+                            })
+                            // 跳转页面
+                            that.$router.push('/dashboard');
                         }else{
                             that.$message.error(res.message);
                         }

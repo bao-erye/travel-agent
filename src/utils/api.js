@@ -6,13 +6,72 @@ export default {
 
     api_base_url,
 
+    //----------------------------------------------用户管理--------------------------------------------
     login(params) {
         return fetch(`supplier/login`, params, 'post');
     },//登入
 
-    out_login(params) {
-        return fetch(`web/out_login`, params, 'post');
-    },//登出
+    loginlog(params) {
+        return fetch(`supplier/insert`, params, 'post', true);
+    },//添加登录日志
+
+    lastLogin(params) {
+        return fetch(`supplier/lastLogin`, params, 'post');
+    },// 写入上次登录时间
+
+    register(params) {
+        return fetch(`supplier/register`, params, 'post', true);
+    },//注册
+
+    updatePwd(params) {
+        return fetch(`supplier/updatepwd`, params, 'post');
+    },//修改密码
+
+    updateIcon(params) {
+        return fetch(`supplier/updateIcon`, params, 'post')
+    },// 修改头像
+
+    // loginOut(params) {
+    //     return fetch(`web/out_login`, params, 'post');
+    // },//登出
+
+    //-------------------------------------------------------商品管理-------------------------------------
+
+    getCount(params) {
+        return fetch(`goods/getCount`, params, 'post')
+    },// 根据商品类型获取商品总量
+
+    getListByQuery(params) {
+        return fetch(`goods/query`, params, 'get')
+    },// 根据查询条件查询商品列表
+
+    updateState(params) {
+        return fetch(`goods/state`, params, 'get')
+    },// 更新商品状态
+
+    deleteGoods(params) {
+        return fetch(`goods/delete`, params, 'get')
+    },// 删除商品
+
+    //--------------------------------------------------------订单管理------------------------------------
+
+    getOrderCount(params) {
+        return fetch(`order/count`, params, 'get')
+    },// 订单数量
+
+    getChartDay(params) {
+        return fetch(`order/chartDay`, params, 'get')
+    },// 各商品销量，仪表盘数据
+
+    getChartMonth(params) {
+        return fetch(`order/chartMonth`, params, 'get')
+    },// 各月各商品销量，仪表盘数据
+
+    //-------------------------------------------------------浏览记录管理---------------------------------
+
+    getHistoryCount(params) {
+        return fetch(`history/count`, params, 'get')
+    },// 获取访问量
 
     addTP(params) {
         return fetch('web/addTP', params, 'post', true);
