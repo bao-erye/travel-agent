@@ -15,7 +15,7 @@
                     <el-option key="2" label="未发布" value="1"></el-option>
                     <el-option key="3" label="已发布" value="2"></el-option>
                     <el-option key="4" label="已上架" value="3"></el-option>
-                    <el-option key="4" label="已下架" value="4"></el-option>
+                    <el-option key="5" label="已下架" value="4"></el-option>
                 </el-select>
                 <el-input placeholder="请输入内容" v-model="search_key_word" @input="get_key" class="input-with-select" clearable>
                     <el-select style="width: 110px;" v-model="searchType" slot="prepend" placeholder="产品编号" @change="set_key">
@@ -33,7 +33,6 @@
                 class="table"
                 ref="multipleTable"
                 header-cell-class-name="table-header"
-                @selection-change="handleSelectionChange"
             >
                 <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
                 <el-table-column prop="id" label="产品编号" width="120" align="center"></el-table-column>
@@ -158,27 +157,28 @@
         <el-dialog :title="handleName" :visible.sync="editVisible" width="50%">
             <el-tabs v-model="activeName1" @tab-click="handleClick">
                 <el-tab-pane label="基本信息" name="first">
-                    <el-form ref="form" :model="form" label-width="130px" label-position="right">
-                        <el-form-item label="行程归类">
+                    <el-form ref="baseForm" :model="addForm" :rules="baseForm"  label-width="130px" label-position="right">
+                        <el-form-item label="行程归类" prop="type">
                             <template>
                                 <!-- <el-checkbox-group v-model="securityList" size="small">
                                     <el-checkbox-button v-for="(s, i) in goodsTypeList" :label="s" :key="i">{{ s }} </el-checkbox-button>
                                 </el-checkbox-group> -->
-                                <el-radio-group v-model="addForm.type" size="small">
-                                    <el-radio-button vv-for="(s, i) in goodsTypeList" :label="s" :key="i+1"></el-radio-button>
+                                <el-radio-group v-model="typeModel" size="small" @change="setType">
+                                    <el-radio-button v-for="s in goodsTypeList" :label="s" :key="s"></el-radio-button>
                                 </el-radio-group>
                             </template>
                         </el-form-item>
-                        <el-form-item label="产品名称">
+                        <el-form-item label="产品名称" prop="name">
                             <el-input v-model="addForm.name" @change="getProTitle"></el-input>
                         </el-form-item>
                         <!-- <el-form-item label="供应商">
                             <el-input v-model="form.provider" @change="getProvider"></el-input>
                         </el-form-item> -->
-                        <el-form-item label="封面图">
+                        <el-form-item label="封面图" prop="coverImageUrl" ref="fileRule">
                             <el-upload
                                 class="avatar-uploader"
                                 name="upload"
+                                v-model="addForm.coverImageUrl"
                                 :action="uploadImgUrl"
                                 :show-file-list="false"
                                 :on-success="handleCoverImageSuccess"
@@ -188,256 +188,193 @@
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="出发地">
-                            <template>
-                                <!-- <el-select v-model="form.start_city_id" filterable placeholder="请选择" @change="getStartCity">
-                                    <el-option
-                                        v-for="item in travelParams.cityList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select> -->
-                                <!-- option用来指定数据源 -->
-                                <!-- props指定配置对象 -->
-                                <!-- model选中项绑定值 -->
-                                <el-cascader
-                                style="width:100%;"
-                                v-model="addForm.beginPlace"
-                                :options="cityData"
-                                :props="cascaderProps"
-                                clearable
-                                popper-class="addressCascader"
+                        <el-form-item label="出发地" prop="beginPlace">
+                            <!-- <el-select v-model="form.start_city_id" filterable placeholder="请选择" @change="getStartCity">
+                                <el-option
+                                    v-for="item in travelParams.cityList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
                                 >
-                                </el-cascader>
-                            </template>
+                                </el-option>
+                            </el-select> -->
+                            <el-input v-model="addForm.beginPlace" @change="getProTitle"></el-input>
                         </el-form-item>
-                        <el-form-item label="目的地">
-                            <template>
-                                <!-- <el-select v-model="form.end_city_id" filterable placeholder="请选择" @change="getEndCity">
-                                    <el-option
-                                        v-for="item in travelParams.cityList"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select> -->
-                                <el-cascader
-                                style="width:100%;"
-                                v-model="addForm.endPlace"
-                                :options="cityData"
-                                :props="cascaderProps"
-                                clearable
-                                popper-class="addressCascader"
+                        <el-form-item label="目的地" prop="endPlace">
+                            <!-- <el-select v-model="form.end_city_id" filterable placeholder="请选择" @change="getEndCity">
+                                <el-option
+                                    v-for="item in travelParams.cityList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
                                 >
-                                </el-cascader>
-                            </template>
+                                </el-option>
+                            </el-select> -->
+                            <el-input v-model="addForm.endPlace" @change="getProTitle"></el-input>
                         </el-form-item>
-                        <el-form-item label="途径地">
-                            <el-input v-model="form.accrosPlace" @change="getProTitle"></el-input>
+                        <el-form-item label="途径地" prop="acrossPlace">
+                            <el-input v-model="addForm.acrossPlace" @change="getProTitle"></el-input>
                         </el-form-item>
                         <el-form-item label="单房差">
-                            <el-input v-model="dfc" @change="getProTitle" suffix-icon="el-icon-lx-recharge"></el-input>
+                            <el-input v-model="addForm.otherExpense" @change="getProTitle" suffix-icon="el-icon-lx-recharge"></el-input>
                         </el-form-item>
-                        <el-form-item label="成人价">
+                        <el-form-item label="成人价" prop="adultPrice">
                             <el-input
-                                v-model="form.adult_price"
+                                v-model="addForm.adultPrice"
                                 size="medium"
                                 @change="getAdultPrice"
                                 placeholder=""
                                 suffix-icon="el-icon-lx-recharge"
                             ></el-input>
                         </el-form-item>
-                        <el-form-item label="儿童价">
+                        <el-form-item label="儿童价" prop="childPrice">
                             <el-input
-                                v-model="form.child_price"
+                                v-model="addForm.childPrice"
                                 suffix-icon="el-icon-lx-recharge"
                                 size="medium"
                                 @change="getChildPrice"
                             ></el-input>
                         </el-form-item>
-                        <el-form-item label="详情图片">
-                            <el-upload
+                        <el-form-item label="详情图片" prop="detailImageUrl" ref="fileRule">
+                            <!-- <el-upload
                                 :action="uploadImgUrl"
                                 list-type="picture-card"
                                 multiple
                                 :file-list="detailImgList"
-                                :on-success="handlePictureSuccess"
-                                :on-preview="handlePictureCardPreview"
+                                :on-success="handleDetailImageSuccess"
+                                :on-preview="handleDetailImagePreview"
                                 :on-remove="handleRemove"
                             >
                                 <i class="el-icon-plus"></i>
                             </el-upload>
                             <el-dialog :visible.sync="dialogVisible">
                                 <img width="100%" :src="dialogImageUrl" alt="" />
-                            </el-dialog>
+                            </el-dialog> -->
+                            <el-upload
+                                class="avatar-uploader"
+                                name="upload"
+                                v-model="addForm.detailImageUrl"
+                                :action="uploadImgUrl"
+                                :show-file-list="false"
+                                :on-success="handleDetailImageSuccess"
+                                :before-upload="beforeImageUpload"
+                            >
+                                <img v-if="detailImageUrl" :src="detailImageUrl" class="avatar" />
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
                         </el-form-item>
-                        <el-form-item label="服务保障">
+                        <el-form-item label="服务保障" prop="serviceEnsure">
                             <template>
-                                <el-checkbox-group v-model="securityList" size="small">
-                                    <el-checkbox-button v-for="(s, i) in travelParams.securityList" :label="s" :key="i"
+                                <el-checkbox-group v-model="serviceList" size="small" @change="serviceChange">
+                                    <el-checkbox-button v-for="s in serviceEnsureList" :label="s" :key="s"
                                         >{{ s }}
                                     </el-checkbox-button>
                                 </el-checkbox-group>
                             </template>
                         </el-form-item>
-                        <el-form-item label="交通方式">
+                        <el-form-item label="交通方式" prop="transport" >
                             <template>
-                                <el-checkbox-group v-model="trafficList" size="small">
-                                    <el-checkbox-button v-for="(s, i) in travelParams.trafficList" :label="s" :key="i"
+                                <el-checkbox-group v-model="trafficList" size="small" @change="transportChange">
+                                    <el-checkbox-button v-for="s in transportList" :label="s" :key="s"
                                         >{{ s }}
                                     </el-checkbox-button>
                                 </el-checkbox-group>
                             </template>
                         </el-form-item>
-                        <el-form-item label="行程天数">
-                            <template>
-                                <el-select v-model="form.trip_day_id" filterable placeholder="请选择" @change="getTripDay">
-                                    <el-option
-                                        v-for="item in travelParams.TripList"
-                                        :key="item.value"
-                                        :label="item.label == '8' ? '8天及以上' : item.label"
-                                        :value="item.value"
-                                    >
-                                    </el-option>
-                                </el-select>
-                            </template>
+                        <el-form-item label="行程天数" prop="days">
+                            <el-input v-model="addForm.days" @input="setSheduling" type="number" :disabled="handleDays"></el-input>
+                        </el-form-item>
+                        <el-form-item label="库存量" prop="stock">
+                            <el-input v-model="addForm.stock" type="number"></el-input>
                         </el-form-item>
                         <el-form-item label="有效日期">
                             <el-date-picker
-                                v-model="form.dateArr"
+                                v-model="dateList"
                                 type="daterange"
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                                @change="getDate"
+                                format="yyyy 年 MM 月 dd 日"
+                                @change="dateChange"
                             >
                             </el-date-picker>
                         </el-form-item>
-                        <!-- <el-form-item label="产品状态">
-                            <el-switch v-model="form.status" active-text="上架" inactive-text="下架" @change="getStatus"> </el-switch>
-                        </el-form-item> -->
                     </el-form>
                 </el-tab-pane>
-                <el-tab-pane label="产品特色" name="second">
-                    <el-card class="box-card" style="margin-top:5px">
-                        <div slot="header" class="clearfix">
-                            <span>特色</span>
-                            <!-- <el-button style="float: right; padding: 3px 0" type="text">编辑</el-button> -->
-                        </div>
-                        <div class="text item">
-                            <el-input type="textarea" v-model="ts" :rows="6"></el-input>
-                        </div>
-                    </el-card>
-                </el-tab-pane>
-                <el-tab-pane label="行程安排" name="third">
-                    <el-tabs v-model="activeName2" type="card" @tab-click="handleClick1">
-                        <el-tab-pane label="第一天" name="first">
-                            <el-form label-position="right" label-width="100px" >
-                                <el-form-item label="行程内容">
+                
+                <el-tab-pane label="行程安排" name="second">
+                    <el-tabs v-model="activeName2" type="card" @tab-click="handleTabClick">
+                        <el-tab-pane  v-for="(item, i) in shedulingList" :label="'第'+Number(i+1)+'天'" :key="i" :name="'第'+Number(i+1)+'天'">
+                            <el-form ref="shedulingForm" :rules="shedulingForm" label-position="right" label-width="100px" >
+                                <el-form-item label="行程内容" prop="general">
                                     <el-input
                                         type="textarea"
                                         placeholder="请输入行程内容"
-                                        v-model="form.general"
+                                        v-model="item.general"
+                                        :rows="2"
                                     ></el-input>
                                 </el-form-item>
-                                <el-form-item label="住宿安排">
+                                <el-form-item label="住宿安排" prop="sleep">
                                     <el-input
                                         type="textarea"
                                         placeholder="请输入住宿安排"
-                                        v-model="form.sleep"
+                                        v-model="item.sleep"
+                                        :rows="1"
                                     ></el-input>
                                 </el-form-item>
-                                <el-form-item label="浏览景点">
+                                <el-form-item label="浏览景点" prop="scenery">
                                     <el-input
                                         type="textarea"
                                         placeholder="请输入浏览景点"
-                                        v-model="form.scenery"
+                                        v-model="item.scenery"
+                                        :rows="5"
                                     ></el-input>
                                 </el-form-item>
-                                <el-form-item label="早餐">
-                                    <el-input  placeholder="请输入早餐安排" v-model="form.breakfast"></el-input>
+                                <el-form-item label="早餐" prop="breakfast">
+                                    <el-input  placeholder="请输入早餐安排" v-model="item.breakfast"></el-input>
                                 </el-form-item>
-                                <el-form-item label="午餐">
-                                    <el-input placeholder="请输入午餐安排" v-model="form.lunch"></el-input>
+                                <el-form-item label="午餐" prop="lunch">
+                                    <el-input placeholder="请输入午餐安排" v-model="item.lunch"></el-input>
                                 </el-form-item>
-                                <el-form-item label="晚餐">
-                                    <el-input placeholder="请输入晚餐安排" v-model="form.dinner"></el-input>
+                                <el-form-item label="晚餐" prop="dinner">
+                                    <el-input placeholder="请输入晚餐安排" v-model="item.dinner"></el-input>
                                 </el-form-item>
-                                <el-form-item label="自由活动">
+                                <el-form-item label="自由活动" prop="relax">
                                     <el-input
                                         type="textarea"
                                         placeholder="请输入自由活动内容"
-                                        v-model="form.relax"
+                                        v-model="item.relax"
+                                        :rows="2"
                                     ></el-input>
                                 </el-form-item>
-                                <el-form-item label="注意事项">
+                                <el-form-item label="注意事项" prop="attention">
                                     <el-input
                                         type="textarea"
                                         placeholder="请输入注意事项"
-                                        v-model="form.attention"
-                                    ></el-input>
-                                </el-form-item>
-                            </el-form>
-                        </el-tab-pane>
-                        <el-tab-pane label="第二天" name="second">
-                            <el-form label-position="right" label-width="100px" >
-                                <el-form-item label="行程内容">
-                                    <el-input
-                                        type="textarea"
-                                        placeholder="请输入行程内容"
-                                        v-model="form.general"
-                                    ></el-input>
-                                </el-form-item>
-                                <el-form-item label="住宿安排">
-                                    <el-input
-                                        type="textarea"
-                                        placeholder="请输入住宿安排"
-                                        v-model="form.sleep"
-                                    ></el-input>
-                                </el-form-item>
-                                <el-form-item label="浏览景点">
-                                    <el-input
-                                        type="textarea"
-                                        placeholder="请输入浏览景点"
-                                        v-model="form.scenery"
-                                    ></el-input>
-                                </el-form-item>
-                                <el-form-item label="早餐">
-                                    <el-input  placeholder="请输入早餐安排" v-model="form.breakfast"></el-input>
-                                </el-form-item>
-                                <el-form-item label="午餐">
-                                    <el-input placeholder="请输入午餐安排" v-model="form.lunch"></el-input>
-                                </el-form-item>
-                                <el-form-item label="晚餐">
-                                    <el-input placeholder="请输入晚餐安排" v-model="form.dinner"></el-input>
-                                </el-form-item>
-                                <el-form-item label="自由活动">
-                                    <el-input
-                                        type="textarea"
-                                        placeholder="请输入自由活动内容"
-                                        v-model="form.relax"
-                                    ></el-input>
-                                </el-form-item>
-                                <el-form-item label="注意事项">
-                                    <el-input
-                                        type="textarea"
-                                        placeholder="请输入注意事项"
-                                        v-model="form.attention"
+                                        v-model="item.attention"
+                                        :rows="4"
                                     ></el-input>
                                 </el-form-item>
                             </el-form>
                         </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
-                <el-tab-pane label="费用说明" name="fourth">
-                    <quill-editor ref="myTextEditor" v-model="content3" :options="editorOption"></quill-editor>
+                <el-tab-pane label="产品特色" name="third">
+                    <el-card class="box-card" style="margin-top:5px">
+                        <div slot="header" class="clearfix">
+                            <span>特色</span>
+                            <!-- <el-button style="float: right; padding: 3px 0" type="text">编辑</el-button> -->
+                        </div>
+                        <div class="text item">
+                            <el-input type="textarea" v-model="addForm.characteristic" :rows="6"></el-input>
+                        </div>
+                    </el-card>
                 </el-tab-pane>
-                <el-tab-pane label="注意事项" name="five">
-                    <quill-editor ref="myTextEditor" v-model="content4" :options="editorOption"></quill-editor>
+                <el-tab-pane label="费用说明" name="fourth">
+                    <quill-editor ref="myTextEditor" v-model="addForm.costDescription"></quill-editor>
+                </el-tab-pane>
+                <el-tab-pane label="注意事项" name="fifth">
+                    <quill-editor ref="myTextEditor" v-model="addForm.attention"></quill-editor>
                 </el-tab-pane>
             </el-tabs>
             <span slot="footer" class="dialog-footer">
@@ -472,14 +409,6 @@ export default {
                 current: 1,
                 size: 4
             },
-            // query: {
-            //     pro_number: '',
-            //     provider: '',
-            //     title: '',
-            //     status: '',
-            //     pageIndex: 1,
-            //     pageSize: 5
-            // },
             pageTotal: 0,//商品总数
             goodsState: '',//商品状态查询条件
             search_key_word: '',// 搜索内容
@@ -487,67 +416,107 @@ export default {
             goodsTypeList: ['国内游','周边游','国外游','特价游'],
             serviceEnsureList: ['无自费','无购物','及时确认','安心游','如实描述'],
             transportList: ['大巴','高铁','飞机','邮轮'],
-            addForm: {},// 添加商品表单数据
+            // addForm: {},
+            addForm: {
+                type: '',
+                supplierId: '',
+                name: '北京3日游',
+                coverImageUrl: '',
+                beginPlace: '武汉',
+                endPlace: '北京',
+                acrossPlace: '武汉,河南,天津',
+                otherExpense: '500',
+                adultPrice: '1000',
+                childPrice: '800',
+                detailImageUrl: '',
+                serviceEnsure: '',
+                transport: '',
+                days: 0,
+                stock: 0,
+                earliestDate: '',
+                latestDate: '',
+                characteristic: 
+                    '1-新婚蜜月鲜花大床，全程0购物 轻松游云南！\n' +
+                    '2-洱海旅拍体验、野生菌火锅、祭火大典、洱海私人游艇、冰川大索道、高原明珠蓝月谷、西南第一湿地拉市海、敞篷吉普全嗨环洱海\n' +
+                    '3-新婚蜜月鲜花大床，全程0购物 轻松游云南！\n' +
+                    '4-洱海旅拍体验、野生菌火锅、祭火大典、洱海私人游艇、冰川大索道、高原明珠蓝月谷、西南第一湿地拉市海、敞篷吉普全嗨环洱海',
+                costDescription:
+                    '费用包含：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '费用不含：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '儿童费用说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '幼儿费用说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '单房差说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+                attention:
+                    '适合年龄：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '提供资料：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '需携带物品：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '特殊限制：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '安全提示：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
+                    '保险说明：人民保险承保，50万游客意外伤害险，5万医疗险，国内2万遗体送返险，国外10万遗体送返险。购买成功后，拨打人保客服95518，报姓名和身份证号，查询保单。由供应商（旅行社）提供旅行社责任险。',
+
+            },// 添加商品表单数据
+            typeModel: '',// 所选行程归类绑定
             uploadImgUrl: '',// 图片上传地址
-            coverImageUrl: '',// 上传所选择的图片
+            coverImageUrl: '',// 上传所选择的封面图片
+            detailImageUrl: '',// 详情图片
             cityData,// 城市数据
+            serviceList: [],// 服务保障绑定列表
+            trafficList: [],// 交通方式绑定列表
+            dateList: [],// 最早日期和最晚日期
+            shedulingList: [],//行程安排列表
             cascaderProps: {
                 value: 'code',
                 label: 'name',
                 children: 'children'
             },// 选择器参数对象
+            // 表单验证
+            baseForm: {
+                type: [{ required: true, message: '请选择行程归类', trigger: 'blur' }],
+                name: [{ required: true, message: '请输入产品名称', trigger: 'blur' }],
+                coverImageUrl: [{ required: true, message: '请添加封面图片', trigger: 'blur' }],
+                detailImageUrl: [{ required: true, message: '请添加详情图片', trigger: 'blur' }],
+                beginPlace: [{ required: true, message: '请选择出发地', trigger: 'blur' }],
+                endPlace: [{ required: true, message: '请选择目的地', trigger: 'blur' }],
+                acrossPlace: [{ required: true, message: '请输入途径地', trigger: 'blur' }],
+                adultPrice: [{ required: true, message: '请输入成人价', trigger: 'blur' }],
+                childPrice: [{ required: true, message: '请输入儿童价', trigger: 'blur' }],
+                serviceEnsure: [{ required: true, message: '请选择服务保障', trigger: 'blur' }],
+                transport: [{ required: true, message: '请选择交通方式', trigger: 'blur' }],
+                days: [{ required: true, message: '请输入行程天数', trigger: 'blur' }],
+                stock: [{ required: true, message: '请输入库存量', trigger: 'blur' }]
+            },
+            // 表单验证
+            shedulingForm: {
+                general: [{ required: true, message: '请输入行程内容', trigger: 'blur' }],
+                sleep: [{ required: true, message: '请输入住宿安排', trigger: 'blur' }],
+                scenery: [{ required: true, message: '请输入浏览景点', trigger: 'blur' }],
+                breakfast: [{ required: true, message: '请输入早餐安排', trigger: 'blur' }],
+                lunch: [{ required: true, message: '请输入午餐安排', trigger: 'blur' }],
+                dinner: [{ required: true, message: '请输入晚餐安排', trigger: 'blur' }],
+                relax: [{ required: true, message: '请输入自由活动内容', trigger: 'blur' }],
+                attention: [{ required: true, message: '请输入注意事项', trigger: 'blur' }],
+            },
+            handleName: '',// 弹框的显示内容
+            activeName1: 'first',// 弹框tabs响应页面绑定
+            activeName2: 'first',// 行程安排tabs响应页面绑定
+            editVisible: false,// 控制弹框显示
+            handleDays: false,// 行程天数输入框是否禁用
+
+
+
             dateVisible: false,
-            ts:
-                '1-新婚蜜月鲜花大床，全程0购物 轻松游云南！\n' +
-                '2-洱海旅拍体验、野生菌火锅、祭火大典、洱海私人游艇、冰川大索道、高原明珠蓝月谷、西南第一湿地拉市海、敞篷吉普全嗨环洱海\n' +
-                '3-新婚蜜月鲜花大床，全程0购物 轻松游云南！\n' +
-                '4-洱海旅拍体验、野生菌火锅、祭火大典、洱海私人游艇、冰川大索道、高原明珠蓝月谷、西南第一湿地拉市海、敞篷吉普全嗨环洱海',
-            content3:
-                '费用包含：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '费用不含：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '儿童费用说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '幼儿费用说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '单房差说明：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-            content4:
-                '适合年龄：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '提供资料：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '需携带物品：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '特殊限制：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '安全提示：XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>' +
-                '保险说明：人民保险承保，50万游客意外伤害险，5万医疗险，国内2万遗体送返险，国外10万遗体送返险。购买成功后，拨打人保客服95518，报姓名和身份证号，查询保单。由供应商（旅行社）提供旅行社责任险。',
-            wyzr:
-                '如遇天灾、人祸、交通意外、交通工具误点等非供应商（旅行社）所能抵抗及控制的因素，导致包括且不限于行程取消、延期、中断、其他人身财产安全损失，旅行社和游客互不承担负责，各自承担自身的人身财产损失。旅行社有义务协助游客处理相关事情。',
-            content6:
-                '因本网站仅仅为交易双方提供交易平台，因此，如有投诉或纠纷，一切经济和法律事宜，与本网站无关。本网站不承担任何经济和法律责任。但本网站为维护消费者权益，及自身的声誉，本网站将为游客提供相关协助，配合游客在本地进行投诉或者诉讼等法律行为。',
-            activeName: 'first',
-            activeName1: 'first',
-            activeName2: 'first',
             dateDialogVisible: false,
             dfc: '500',
-            jd: [],
-            xcgl: ['周边游', '国内游', '出境游', '特价游'],
-            yljd: ['东湖', '南湖', '泰国', '新加坡', '印度尼西亚'],
-            // tjd: ['武汉', '南京', '合肥', '成都'],
-            
-            
-            
-            
-            
             tableData: [],
-            securityList: ['无购物'],
-            themeList: ['古镇水乡'],
-            trafficList: ['汽车'],
             ajaxData: {
                 basic: {},
                 paramList: [],
                 imgList: []
             },
             load_over: false,
-            handleName: '',
+            
             multipleSelection: [],
             delList: [],
-            editVisible: false,
-            
             form: {},
             idx: -1,
             id: -1,
@@ -557,7 +526,6 @@ export default {
             dialogImageUrl: '',
             dialogVisible: false,
             detailImgList: [],
-            
             imageUrl: '',
             datePickerShow: true,
             feeProps: {}
@@ -573,6 +541,7 @@ export default {
         this.uploadImgUrl = this.base_api_url + 'goods/upload';
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));// 获取供应商信息
         this.query.supplierId = this.userInfo.id;
+        this.addForm.supplierId = this.userInfo.id;
         this.getListByQuery();// 获取商品列表
     },
     methods: {
@@ -708,7 +677,278 @@ export default {
             }
             return isJPG && isLt2M;
         },
+        // 详情图片上传成功
+        handleDetailImageSuccess(res, file) {
+            console.log(res)
+            this.addForm.detailImageUrl = res.data
+            this.detailImageUrl = URL.createObjectURL(file.raw);
+        },
+        // 设置行程安排列表
+        setSheduling(e) {
+            var that = this;
+            that.shedulingList = [];
+            for(var i=1;i<Number(e)+1;i++){
+                var sheduling = {
+                    general: '天安门-故宫-颐和园-圆明园-长城-山海关',
+                    sleep: '万达文华酒店',
+                    scenery: '酒店享用早餐后，乘车赴西山，游览高原明珠【滇池海埂大坝】（游览时间30分钟），这里水面开阔，朝阳的余晖静静地洒在水面上。滇池又称昆明湖，是云南一大的淡水湖，素称五百里滇池，是中国第六大淡水湖。 滇池位于西山脚下，云南民族村与西山公园隔水相望，素来是昆明市度假观光和避暑的胜地。海埂本是一条自东向西横插入滇池的长堤，将滇池一分为二。埂南为滇池，埂北是草海。堤上绿树成荫，垂柳拂面，堤下是有着细软沙滩的湖水，是昆明市天然浴场。每年冬季，都会有来自西伯利亚的红嘴鸥来此过冬，你可以和这些小精灵们欢乐互动。',
+                    breakfast: '酒店自助早餐，（用时：约30分钟）',
+                    lunch: '自理',
+                    dinner: '长街宴，（用时：约40分钟）',
+                    relax: '自由活动',
+                    attention: '以上行程可能会因天气、路况等原因做相应调整，敬请谅解！',
+                    goodsId: ''
+                };
+                that.shedulingList.push(sheduling);
+            }
+            
+        },
+        // 弹出框 tabs点击事件
+        handleClick(tab, event) {
+            // console.log(tab);
+            // console.log(event);
+        },
+        // 行程安排tabs点击事件
+        handleTabClick(tab, event) {
+            // var index = Number(tab.index);
+            // console.log("这个页面的数据为:");
+            // console.log(this.shedulingList[index]);
+        },
+        // 行程归类change事件
+        setType() {
+            if(this.typeModel == '国内游'){
+                this.addForm.type = '1'
+            } else if(this.typeModel == '周边游'){
+                this.addForm.type = '2'
+            } else if(this.typeModel == '国外游'){
+                this.addForm.type = '3'
+            } else if(this.typeModel == '特价游'){
+                this.addForm.type = '4'
+            }
+            
+        },
+        // 服务保障多选框change事件
+        serviceChange() {
+            this.addForm.serviceEnsure = ''
+            this.serviceList.forEach(e => {
+                this.addForm.serviceEnsure = this.addForm.serviceEnsure + e + ','
+            })
+        },
+        // 交通方式多选框change事件
+        transportChange() {
+            this.addForm.transport = ''
+            this.trafficList.forEach(e => {
+                this.addForm.transport = this.addForm.transport + e + ','
+            })
+        },
+        // 日期选择器change事件
+        dateChange(e) {
+            this.addForm.earliestDate = e[0];
+            this.addForm.latestDate = e[1];
+        },
+        // 提交商品信息
+        saveEdit() {
+            var that = this;
+            console.log(that.addForm)
+            console.log(that.shedulingList)
+            // 基本信息表单验证
+            that.$refs.baseForm.validate((valid) => {
+                if (valid) {
+                    if(that.handleName == '添加产品') {
+                        // 发送添加商品请求
+                        that.api.addGoods(that.addForm).then(res => {
+                            console.log(res)
+                            if(res.code=="200"){
+                                that.$message.success("成功添加商品")
+                                that.shedulingList.forEach( item => {
+                                    // 给行程安排设置商品ID
+                                    item.goodsId = res.data
+                                    // 发送添加商品行程安排请求
+                                    that.api.addScheduling(item).then(response => {
+                                        console.log(response)
+                                        if(response.code=="200"){
 
+                                        }else {
+                                            that.$message.error("添加商品行程失败")
+                                        }
+                                    })
+                                })
+                            }else{
+                                that.$message.error("添加商品失败")
+                            }
+                            // 关闭弹框
+                            that.editVisible = false;
+                            // 清空表单
+                            that.addForm = {}
+                        })
+                    }else if(that.handleName == '编辑产品') {
+                        // 发送修改商品请求
+                        that.api.updateGoods(that.addForm).then(res => {
+                            console.log(res)
+                            if(res.code=="200"){
+                                that.$message.success("成功修改商品")
+                                that.shedulingList.forEach( item => {
+                                    // 发送更新行程安排请求
+                                    that.api.updateScheduling(item).then(response => {
+                                        console.log(response)
+                                        if(response.code=="200"){
+                                        }else {
+                                            that.$message.error("修改商品行程失败")
+                                        }
+                                    })
+                                })
+                            }else{
+                                that.$message.error("修改商品失败")
+                            }
+                            // 关闭弹框
+                            that.editVisible = false;
+                            // 清空表单
+                            that.addForm = {};
+                            // 设置天数输入可用
+                            this.handleDays = false;
+                        })
+                    }
+                } else {
+                    that.$message.error("请检查填写的商品基本信息是否有遗漏或者有错误")
+                }
+            });
+            // 刷新数据
+            that.getListByQuery()
+        },
+        //新增产品按钮点击事件
+        handleAdd() {
+            this.handleName = '添加产品';
+            // 清除之前绑定
+            this.addForm = {};
+            this.typeModel = ''
+            this.coverImageUrl = ''
+            this.detailImageUrl = ''
+            this.serviceList = []
+            this.trafficList = []
+            this.dateList = []
+            this.shedulingList = []
+            // 显示弹框
+            this.editVisible = true;
+        },
+        // 设置商品分类显示
+        setType(type) {
+            if(type == '1'){
+                this.typeModel = '国内游'
+            }else if(type == '2'){
+                this.typeModel = '周边游'
+            }else if(type == '3'){
+                this.typeModel = '国外游'
+            }else if(type == '4'){
+                this.typeModel = '特价游'
+            }
+        },
+        // 设置商品封面图片显示
+        setCoverImage(url) {
+            this.coverImageUrl = url
+        },
+        // 设置商品详情图片显示
+        setDetailImage(url) {
+            this.detailImageUrl = url
+        },
+        // 设置服务保障列表显示
+        setServiceEnsure(service) {
+            var array = service.split("，");
+            this.serviceList = array
+        },
+        // 设置交通方式显示
+        setTransport(transport) {
+            var array = transport.split("，");
+            this.trafficList = array
+        },
+        // 设置日期显示
+        setDate(early,late) {
+            var array = [];
+            array.push(early)
+            array.push(late)
+            this.dateList = array
+        },
+        // 编辑按钮点击事件
+        handleEdit(index, row) {
+            // 设置显示数据
+            this.handleName = '编辑产品';
+            this.addForm = row
+            this.setType(row.type);
+            this.setCoverImage(row.coverImageUrl)
+            this.setDetailImage(row.detailImageUrl)
+            this.setServiceEnsure(row.serviceEnsure)
+            this.setTransport(row.transport)
+            this.setDate(row.earliestDate, row.latestDate)
+            this.handleDays = true;// 禁止修改行程天数
+            // 获取行程安排显示
+            this.api.getScheduling({goodsId:row.id}).then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    this.$message.success("成功获取商品行程")
+                    this.shedulingList = res.data
+                    this.addForm.days = res.data.length
+                }else {
+                    this.$message.error("获取商品行程失败")
+                }
+            })
+            this.editVisible = true;
+        },
+        // 保存编辑，提交商品
+        // saveEdit() {
+        //     var that = this;
+        //     this.editVisible = false;
+        //     this.getParams();
+        //     console.log(this.ajaxData);
+        //     if (this.handleName == '添加产品')
+        //         this.api
+        //             .addTP({
+        //                 product: this.ajaxData.basic,
+        //                 paramsList: this.ajaxData.paramList,
+        //                 imageList: this.ajaxData.imgList
+        //             })
+        //             .then(res => {
+        //                 that.getData();
+        //             });
+        //     else {
+        //         this.editParam();
+        //         //console.log(this.ajaxData)
+        //         this.api
+        //             .updateTP({
+        //                 product: this.ajaxData.basic,
+        //                 paramsList: this.ajaxData.paramList,
+        //                 imageList: this.ajaxData.imgList
+        //             })
+        //             .then(res => {
+        //                 that.getData();
+        //             });
+        //     }
+        //     //this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+        //     //this.$set(this.tableData, this.idx, this.form);
+        // },
+        // handlePictureSuccess(response, file, fileList) {
+        //     this.handleImgList(fileList);
+        // },
+        // handleRemove(file, fileList) {
+        //     this.handleImgList(fileList);
+        // },
+        // handlePictureCardPreview(file) {
+        //     this.dialogImageUrl = file.url;
+        //     this.dialogVisible = true;
+        // },
+        //图片处理
+        // handleImgList(fileList) {
+        //     var imgList = [];
+        //     var ajaxImgList = [];
+        //     fileList.forEach(i => {
+        //         if (i.response.code == '200') {
+        //             imgList.push(this.base_api_url + i.response.data);
+        //             ajaxImgList.push({
+        //                 url: i.response.data
+        //             });
+        //         }
+        //     });
+        //     this.form.imgList = imgList;
+        //     this.ajaxData.imgList = ajaxImgList;
+        // },
         closeFee() {
             this.datePickerShow = false;
         },
@@ -844,40 +1084,12 @@ export default {
         getTripDay(e) {
             this.ajaxData.basic.trip_days = this.idToName(e, 6);
         },
-        //获取有效日期
-        getDate(e) {
-            this.ajaxData.basic.start_time = e[0];
-            this.ajaxData.basic.end_time = e[1];
-        },
+        
         //获取产品状态
         getStatus(e) {
             this.ajaxData.basic.status = e ? 1 : 0;
         },
-        handlePictureSuccess(response, file, fileList) {
-            this.handleImgList(fileList);
-        },
-        handleRemove(file, fileList) {
-            this.handleImgList(fileList);
-        },
-        handlePictureCardPreview(file) {
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-        },
-        //图片处理
-        handleImgList(fileList) {
-            var imgList = [];
-            var ajaxImgList = [];
-            fileList.forEach(i => {
-                if (i.response.code == '200') {
-                    imgList.push(this.base_api_url + i.response.data);
-                    ajaxImgList.push({
-                        url: i.response.data
-                    });
-                }
-            });
-            this.form.imgList = imgList;
-            this.ajaxData.imgList = ajaxImgList;
-        },
+        
         //参数处理
         editParam() {
             this.ajaxData.basic.id = this.form.id;
@@ -1065,61 +1277,8 @@ export default {
                 })
                 .catch(() => {});
         },
-        //新增
-        handleAdd() {
-            this.handleName = '添加产品';
-            this.form = {};
-            this.securityList = [];
-            this.trafficList = [];
-            this.themeList = [];
-            this.detailImgList = [];
-            this.editVisible = true;
-        },
-        // 编辑操作
-        handleEdit(index, row) {
-            this.handleName = '编辑产品';
-            this.idx = index;
-            this.form = row;
-            this.securityList = row.securityList;
-            this.trafficList = row.trafficList;
-            this.themeList = row.themeList;
-            this.detailImgList = row.imgList.map((t, i) => {
-                return { name: i + '.' + t.split('.')[1], url: t };
-            });
-            this.editVisible = true;
-        },
-        // 保存编辑
-        saveEdit() {
-            var that = this;
-            this.editVisible = false;
-            this.getParams();
-            console.log(this.ajaxData);
-            if (this.handleName == '添加产品')
-                this.api
-                    .addTP({
-                        product: this.ajaxData.basic,
-                        paramsList: this.ajaxData.paramList,
-                        imageList: this.ajaxData.imgList
-                    })
-                    .then(res => {
-                        that.getData();
-                    });
-            else {
-                this.editParam();
-                //console.log(this.ajaxData)
-                this.api
-                    .updateTP({
-                        product: this.ajaxData.basic,
-                        paramsList: this.ajaxData.paramList,
-                        imageList: this.ajaxData.imgList
-                    })
-                    .then(res => {
-                        that.getData();
-                    });
-            }
-            //this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            //this.$set(this.tableData, this.idx, this.form);
-        },
+        
+        
         
     }
 };

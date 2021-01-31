@@ -53,6 +53,26 @@ export default {
         return fetch(`goods/delete`, params, 'get')
     },// 删除商品
 
+    addGoods(params) {
+        return fetch(`goods/add`, params, 'post', true)
+    },// 添加商品
+
+    addScheduling(params) {
+        return fetch(`scheduling/add`, params, 'post', true)
+    },//添加商品行程
+
+    updateGoods(params) {
+        return fetch(`goods/update`, params, 'post', true)
+    },// 更新商品信息
+
+    updateScheduling(params) {
+        return fetch(`scheduling/update`, params, 'post', true)
+    },//更新行程信息
+
+    getScheduling(params) {
+        return fetch(`scheduling/get`, params, 'get')
+    },//根据商品ID获取行程信息
+
     //--------------------------------------------------------订单管理------------------------------------
 
     getOrderCount(params) {
