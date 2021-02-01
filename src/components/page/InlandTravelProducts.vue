@@ -404,11 +404,13 @@ export default {
             query: {
                 supplierId: '',
                 goodsId: '',
+                type: '1',
                 name: '',
                 state: '',
                 current: 1,
                 size: 4
             },
+            tableData: [],// 表格数据
             pageTotal: 0,//商品总数
             goodsState: '',//商品状态查询条件
             search_key_word: '',// 搜索内容
@@ -507,14 +509,12 @@ export default {
             dateVisible: false,
             dateDialogVisible: false,
             dfc: '500',
-            tableData: [],
             ajaxData: {
                 basic: {},
                 paramList: [],
                 imgList: []
             },
             load_over: false,
-            
             multipleSelection: [],
             delList: [],
             form: {},
@@ -631,7 +631,7 @@ export default {
                         that.$message.success("成功下架商品")
                         that.getListByQuery()
                     }else{
-                        that.$message.error("下架商品失败")
+                        that.$message.error(res.message)
                     }
                 })
             })

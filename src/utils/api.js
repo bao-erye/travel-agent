@@ -87,6 +87,26 @@ export default {
         return fetch(`order/chartMonth`, params, 'get')
     },// 各月各商品销量，仪表盘数据
 
+    getOrderList(params) {
+        return fetch(`order/get`, params, 'get')
+    },// 根据查询条件获取订单列表
+
+    getPassenger(params) {
+        return fetch(`passenger/get`, params, 'get')
+    },// 根据旅客ID获取旅客信息
+
+    updateState(params) {
+        return fetch(`order/updatestate`, params, 'get')
+    },//更新订单状态
+
+    deleteOrder(params) {
+        return fetch(`order/delete`, params, 'get')
+    },// 删除订单
+
+    updateOrder(params) {
+        return fetch(`order/update`, params, 'post',true)
+    },//更新订单状态
+
     //-------------------------------------------------------浏览记录管理---------------------------------
 
     getHistoryCount(params) {
@@ -173,9 +193,9 @@ export default {
     searchSpecifiedFeedBacks(params) {
         return fetch('web/searchSpecifiedFeedBacks', params, 'post');
     },//搜索指定反馈
-    getOrderList(params) {
-        return fetch('getOrderList', params, 'post');
-    },//获取反馈
+    // getOrderList(params) {
+    //     return fetch('getOrderList', params, 'post');
+    // },//获取反馈
     searchSpecifiedOrder(params) {
         return fetch('searchSpecifiedOrder', params, 'post');
     },//搜索指定反馈
