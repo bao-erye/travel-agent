@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import TravelEvaDetails from '../components/page/TravelEvaDetails.vue';
 
 Vue.use(Router);
 
@@ -66,8 +67,9 @@ export default new Router({
                     meta: { title: '产品评价', requireAuth: true }
                 },
                 {
-                    path: '/travelEvaDetails',
-                    component: () => import('../components/page/TravelEvaDetails.vue'),
+                    path: '/travelEvaDetails/:id',
+                    name: 'travelEvaDetails',
+                    component: TravelEvaDetails,
                     meta: { title: '评价详情', requireAuth: true }
                 },
                 {

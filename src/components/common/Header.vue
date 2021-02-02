@@ -63,11 +63,9 @@ export default {
         handleCommand(command) {
             var that = this;
             if (command == 'loginout') {
-                this.api.out_login().then(res => {
-                    localStorage.removeItem('userInfo');
-                    that.$message.success('您已退出登录');
-                    that.$router.push('/login');
-                });
+                localStorage.removeItem('userInfo');
+                that.$message.success('您已退出登录');
+                that.$router.push('/login');
             }
             if (command == 'updateInfo') {
                 this.$router.push('/per');

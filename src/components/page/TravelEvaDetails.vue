@@ -12,10 +12,11 @@
             <div class="handle-box">
                 <el-input style="width: 510px;" placeholder="请输入内容" v-model="search_key_word" class="input-with-select" clearable>
                     <el-select style="width: 120px;"  v-model="searchType" slot="prepend"
-                            placeholder="产品编号" @change="getSearchType">
-                        <el-option label="产品名称" value="1"></el-option>
+                            placeholder="全部显示">
+                        <el-option label="发表用户" value="1"></el-option>
+                        <el-option label="评价内容" value="2"></el-option>
                     </el-select>
-                    <el-button slot="append" icon="el-icon-search" ></el-button>
+                    <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
                 </el-input>
             </div>
             <!-- 表格区域 -->
@@ -26,35 +27,45 @@
                         border
                         class="table"
                         ref="multipleTable"
-                        @select="handleSelection"
-                        @select-all="handleSelection"
                 >
-                    <el-table-column prop="id" label="编号"  align="center" width="50px"></el-table-column>
-                    <el-table-column prop="cpbh" label="产品编号"  align="center"></el-table-column>
-                    <el-table-column prop="cpmc" label="产品名称"  align="center"></el-table-column>
-                    <el-table-column  label="发表用户"  align="center">
-                        <template slot-scope="scope">
-                            <div style="flex:display;justify-content:center;align-items:center;">
-                                <div>{{scope.row.fbyh}}</div>
-                                <img :src="avatar" class="user-avatar" alt />
-                            </div>
+                    <el-table-column prop="id" label="产品编号"  align="center" width="75px"></el-table-column>
+                    <el-table-column prop="goodsName" label="产品名称"  align="center" ></el-table-column>
+                    <el-table-column prop="userName" label="发表用户"  align="center" ></el-table-column>
+                    <el-table-column prop="score" label="评分"  align="center"  width="50px"></el-table-column>
+                    <el-table-column prop="content" label="评价描述"  align="center" width="200px"></el-table-column>
+                    <el-table-column label="行程安排"  align="center">
+                        <template scope="scope">
+                            {{scoreList[scope.row.schedule-1]}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="pf" label="评分"  align="center"></el-table-column>
-                    <el-table-column prop="pjms" label="评价描述"  align="center"></el-table-column>
-                    <el-table-column prop="xcap" label="行程安排"  align="center"></el-table-column>
-                    <el-table-column prop="dyfw" label="导游服务"  align="center"></el-table-column>
-                    <el-table-column prop="zsty" label="住宿体验"  align="center"></el-table-column>
-                    <el-table-column prop="cszl" label="餐食质量"  align="center"></el-table-column>
-                    <el-table-column prop="jqzl" label="景区质量"  align="center"></el-table-column>
+                    <el-table-column label="导游服务"  align="center">
+                        <template scope="scope">
+                            {{scoreList[scope.row.guide-1]}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="住宿体验"  align="center">
+                        <template scope="scope">
+                            {{scoreList[scope.row.sleep-1]}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="餐食质量"  align="center">
+                        <template scope="scope">
+                            {{scoreList[scope.row.food-1]}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="景区质量"  align="center">
+                        <template scope="scope">
+                            {{scoreList[scope.row.scenery-1]}}
+                        </template>
+                    </el-table-column>
                     <el-table-column fixed="right" label="操作" width="65px" align="center">
                         <template>
-                            <!-- <el-button type="text" icon="el-icon-view" @click="dialogVisible = true">回复</el-button> -->
                             <el-button type="text" icon="el-icon-delete" class="red">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-dialog
+                <!-- 回复弹框 -->
+                <!-- <el-dialog
                     title="回复"
                     :visible.sync="dialogVisible"
                     width="30%"
@@ -64,13 +75,13 @@
                         <el-button @click="dialogVisible = false">取 消</el-button>
                         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
                     </span>
-                </el-dialog>
+                </el-dialog> -->
                 <div class="pagination">
                     <el-pagination
                             background
                             layout="total, prev, pager, next"
-                            :current-page="query.pageIndex"
-                            :page-size="query.pageSize"
+                            :current-page="query.current"
+                            :page-size="query.size"
                             :total="pageTotal"
                             @current-change="handlePageChange"
                     ></el-pagination>
@@ -80,6 +91,7 @@
     </div>
 </template>
 <script>
+import { Form } from 'element-ui';
     import api from '../../utils/api';
 
     export default {
@@ -88,100 +100,75 @@
             return {
                 dialogVisible: false,
                 query: {
-                    address: '',
-                    name: '',
-                    pageIndex: 1,
-                    pageSize: 10
+                    goodsId: 1,
+                    userName: '',
+                    content: '',
+                    current: 1,
+                    size: 4
                 },
-                tableData: [
-                    {
-                        id:"1",
-                        cpbh:"926622631MA6Fe4NB55Y",
-                        cpmc:"三亚春节热售 豪品0自费 印象丽江+洱海大邮轮+玉龙雪山",
-                        fbyh:"13476818230",
-                        pf:"5.5",
-                        pjms:"风景很好，下次再来",
-                        xcap:"非洲满意",
-                        dyfw:"满意",
-                        zsty:"较满意",
-                        cszl:"一般",
-                        jqzl:"较差",
-                        lyjt:"极差"
-                    },
-                    {
-                        id:"2",
-                        cpbh:"926622631MA6Fe4NB55Y",
-                        cpmc:"三亚春节热售 豪品0自费 印象丽江+洱海大邮轮+玉龙雪山",
-                        fbyh:"13476818230",
-                        avatar:"",
-                        pf:"5.5",
-                        pjms:"风景很好，下次再来",
-                        xcap:"非洲满意",
-                        dyfw:"满意",
-                        zsty:"较满意",
-                        cszl:"一般",
-                        jqzl:"较差",
-                        lyjt:"极差"
-                    },
-                    {
-                        id:"3",
-                        cpbh:"926622631MA6Fe4NB55Y",
-                        cpmc:"三亚春节热售 豪品0自费 印象丽江+洱海大邮轮+玉龙雪山",
-                        fbyh:"13476818230",
-                        pf:"5.5",
-                        pjms:"风景很好，下次再来",
-                        xcap:"非洲满意",
-                        dyfw:"满意",
-                        zsty:"较满意",
-                        cszl:"一般",
-                        jqzl:"较差",
-                        lyjt:"极差"
-                    },
-                    {
-                        id:"4",
-                        cpbh:"926622631MA6Fe4NB55Y",
-                        cpmc:"三亚春节热售 豪品0自费 印象丽江+洱海大邮轮+玉龙雪山",
-                        fbyh:"13476818230",
-                        pf:"5.5",
-                        pjms:"风景很好，下次再来",
-                        xcap:"非洲满意",
-                        dyfw:"满意",
-                        zsty:"较满意",
-                        cszl:"一般",
-                        jqzl:"较差",
-                        lyjt:"极差"
-                    },
-                    {
-                        id:"5",
-                        cpbh:"926622631MA6Fe4NB55Y",
-                        cpmc:"三亚春节热售 豪品0自费 印象丽江+洱海大邮轮+玉龙雪山",
-                        fbyh:"13476818230",
-                        pf:"5.5",
-                        pjms:"风景很好，下次再来",
-                        xcap:"非洲满意",
-                        dyfw:"满意",
-                        zsty:"较满意",
-                        cszl:"一般",
-                        jqzl:"较差",
-                        lyjt:"极差"
-                    }
-                ],
-                pageTotal: 10,
+                tableData: [],
+                pageTotal: 1,
                 isLoading: false,
+                search_key_word: '',
+                searchType: '',
+                scoreList: ['较差','一般','较满意','满意','非常满意'],
+                //5非常满意，4满意，3较满意，2一般，1较差
+
             };
         },
-        computed:{
-            avatar(){
-                let avatar = JSON.parse(localStorage.getItem('userInfo')).avatar;
-                return avatar ? this.base_api_url + avatar : this.init_avatar;
-            },
+        created() {
+            if(this.$route.params.id != null){
+                    this.query.goodsId = this.$route.params.id;
+                    this.getCommentByQuery()
+                }
+        },
+        watch:{
+            "$route":function(to,from){
+                if(this.$route.params.id != null){
+                    this.query.goodsId = this.$route.params.id;
+                    this.getCommentByQuery()
+                }
+                
+                
+            //from 对象中包含当前地址
+            //to 对象中包含目标地址
+            //其实还有一个next参数的，这个参数是控制路由是否跳转的，如果没写，可以不用写next()来代表允许路由跳转，如果写了就必须写next(),否则路由是不会生效的。
+            }
         },
         methods: {
-        
-        },
-        created() {
-            // this.pageInit();
+            getCommentByQuery() {
+                this.api.getCommentByQuery(this.query).then(res => {
+                    console.log(res)
+                    if(res.code=="200"){
+                        this.$message.success("成功获取评价列表")
+                        this.tableData = res.data.data
+                        this.pageTotal = res.data.total
+                    }else{
+                        this.$message.error("获取评价列表失败")
+                    }
+                })
+            },
+            initQuery() {
+                this.userName = ''
+                this.content = ''
+            },
+            // 获得搜索结果
+            getSearchResult() {
+                this.initQuery();
+                if(this.searchType == 1){
+                    this.query.userName = this.search_key_word;
+                }else if(this.searchType == 2){
+                    this.query.content = this.search_key_word;
+                }
+                this.getCommentByQuery();
+
+            },
+            // 分页点击事件
+            handlePageChange() {
+                this.getCommentByQuery()
+            }
         }
+        
     };
 </script>
 <style scoped>

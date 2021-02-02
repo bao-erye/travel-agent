@@ -14,7 +14,7 @@
                         上次登录时间：
                     </div>
                     <div class="user-info-list">
-                        {{userInfo.lastLoginTime}}
+                        {{new Date(userInfo.lastLoginTime).toLocaleString()}}
                     </div>
                 </el-card>
             </el-col>
@@ -220,19 +220,6 @@ export default {
         this.getChartDay() // 获取一周各商品销量
         this.getChartMonth() // 获取几月各商品销量
     },
-    computed: {
-    },
-    // created() {
-    //     this.handleListener();
-    //     this.changeDate();
-    // },
-    // activated() {
-    //     this.handleListener();
-    // },
-    // deactivated() {
-    //     window.removeEventListener('resize', this.renderChart);
-    //     bus.$off('collapse', this.handleBus);
-    // },
     methods: {
         // 获取商品数量
         getCount() {
