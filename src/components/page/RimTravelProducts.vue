@@ -35,9 +35,9 @@
                 header-cell-class-name="table-header"
             >
                 <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-                <el-table-column prop="id" label="产品编号" width="120" align="center"></el-table-column>
-                <el-table-column prop="name" label="产品名称" width="160" align="center"></el-table-column>
-                <el-table-column prop="sold" label="销量" width="90" align="center"></el-table-column>
+                <el-table-column prop="id" label="编号" width="60" align="center"></el-table-column>
+                <el-table-column prop="name" label="产品名称" width="180" align="center"></el-table-column>
+                <el-table-column prop="sold" label="销量" width="60" align="center"></el-table-column>
                 <el-table-column prop="score" label="评分" width="60" align="center"></el-table-column>
                 <el-table-column label="封面图" width="120" align="center">
                     <template slot-scope="scope">
@@ -49,14 +49,21 @@
                         ></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column label="服务保障" width="120" align="center">
+                <!-- <el-table-column prop="provider" label="供应商" width="120" align="center"></el-table-column> -->
+                <el-table-column label="服务保障" width="120" align="center">  <!--service_ensure-->
                     <template slot-scope="scope">
+                        <!-- <div v-for="item in scope.row.securityList" :key="item">{{ item }}</div> -->
                         {{scope.row.serviceEnsure}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="days" label="行程天数" width="90" align="center"></el-table-column>
+                <el-table-column prop="days" label="行程天数" width="60" align="center"></el-table-column>
                 <el-table-column label="详情图片" width="240" align="center">
                     <template slot-scope="scope">
+                        <!-- <el-carousel :interval="4000" type="card" height="70px" indicator-position="none">
+                            <el-carousel-item v-for="(img, i) in scope.row.imgList" :key="i">
+                                <el-image style="width: 120px; height: 70px" class="table-td-thumb" :src="img"></el-image>
+                            </el-carousel-item>
+                        </el-carousel> -->
                         <el-image
                             style="width: 70px; height: 70px"
                             class="table-td-thumb"
@@ -64,8 +71,9 @@
                         ></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column label="交通类型" width="120" align="center">
+                <el-table-column label="交通类型" width="120" align="center"><!--transport-->
                     <template slot-scope="scope">
+                        <!-- <div v-for="item in scope.row.trafficList" :key="item">{{ item }}</div> -->
                         {{scope.row.transport}}
                     </template>
                 </el-table-column>
@@ -74,6 +82,7 @@
                 </el-table-column>
                 <el-table-column prop="across_place" width="120" label="途径地" align="center">
                     <template slot-scope="scope">
+                        <!-- <div v-for="item in scope.row.through_address" :key="item">{{ item }}</div> -->
                         {{scope.row.acrossPlace}}
                     </template>
                 </el-table-column>
@@ -105,6 +114,13 @@
                         <!-- 发布操作 -->
                         <el-button v-if="scope.row.state == 1 || scope.row.state == 4" type="text" style="color:#67C23A" icon="el-icon-s-release" @click="releaseGoods(scope.row.id)">发布</el-button>
                         <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-s-release">发布</el-button>
+                        <!-- <el-button
+                            type="text"
+                            style="color:#409EFF"
+                            :icon="scope.row.status ? 'el-icon-bottom' : 'el-icon-top'"
+                            @click="handleTp(scope.row.status)"
+                            >{{ scope.row.status ? '下架' : '上架' }}
+                        </el-button> -->
                         <!-- 下架操作 -->
                         <el-button v-if="scope.row.state == 3"  type="text" style="color:#409EFF" icon="el-icon-bottom" @click="offGoods(scope.row.id)">下架</el-button>
                         <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-bottom">下架</el-button>
@@ -144,6 +160,9 @@
                     <el-form ref="baseForm" :model="addForm" :rules="baseForm"  label-width="130px" label-position="right">
                         <el-form-item label="行程归类" prop="type">
                             <template>
+                                <!-- <el-checkbox-group v-model="securityList" size="small">
+                                    <el-checkbox-button v-for="(s, i) in goodsTypeList" :label="s" :key="i">{{ s }} </el-checkbox-button>
+                                </el-checkbox-group> -->
                                 <el-radio-group v-model="typeModel" size="small" @change="setType">
                                     <el-radio-button v-for="s in goodsTypeList" :label="s" :key="s"></el-radio-button>
                                 </el-radio-group>
@@ -152,6 +171,9 @@
                         <el-form-item label="产品名称" prop="name">
                             <el-input v-model="addForm.name"></el-input>
                         </el-form-item>
+                        <!-- <el-form-item label="供应商">
+                            <el-input v-model="form.provider" @change="getProvider"></el-input>
+                        </el-form-item> -->
                         <el-form-item label="封面图" prop="coverImageUrl" ref="fileRule">
                             <el-upload
                                 class="avatar-uploader"
@@ -167,9 +189,27 @@
                             </el-upload>
                         </el-form-item>
                         <el-form-item label="出发地" prop="beginPlace">
+                            <!-- <el-select v-model="form.start_city_id" filterable placeholder="请选择" @change="getStartCity">
+                                <el-option
+                                    v-for="item in travelParams.cityList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                >
+                                </el-option>
+                            </el-select> -->
                             <el-input v-model="addForm.beginPlace"></el-input>
                         </el-form-item>
                         <el-form-item label="目的地" prop="endPlace">
+                            <!-- <el-select v-model="form.end_city_id" filterable placeholder="请选择" @change="getEndCity">
+                                <el-option
+                                    v-for="item in travelParams.cityList"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                >
+                                </el-option>
+                            </el-select> -->
                             <el-input v-model="addForm.endPlace"></el-input>
                         </el-form-item>
                         <el-form-item label="途径地" prop="acrossPlace">
@@ -194,6 +234,20 @@
                             ></el-input>
                         </el-form-item>
                         <el-form-item label="详情图片" prop="detailImageUrl" ref="fileRule">
+                            <!-- <el-upload
+                                :action="uploadImgUrl"
+                                list-type="picture-card"
+                                multiple
+                                :file-list="detailImgList"
+                                :on-success="handleDetailImageSuccess"
+                                :on-preview="handleDetailImagePreview"
+                                :on-remove="handleRemove"
+                            >
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                            <el-dialog :visible.sync="dialogVisible">
+                                <img width="100%" :src="dialogImageUrl" alt="" />
+                            </el-dialog> -->
                             <el-upload
                                 class="avatar-uploader"
                                 name="upload"
@@ -307,6 +361,7 @@
                     <el-card class="box-card" style="margin-top:5px">
                         <div slot="header" class="clearfix">
                             <span>特色</span>
+                            <!-- <el-button style="float: right; padding: 3px 0" type="text">编辑</el-button> -->
                         </div>
                         <div class="text item">
                             <el-input type="textarea" v-model="addForm.characteristic" :rows="6"></el-input>
@@ -334,6 +389,7 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
 import { quillEditor } from 'vue-quill-editor';
+import cityData from '../common/city-data.js';
 
 export default {
     name: 'basetable',
@@ -360,6 +416,7 @@ export default {
             goodsTypeList: ['国内游','周边游','国外游','特价游'],
             serviceEnsureList: ['无自费','无购物','及时确认','安心游','如实描述'],
             transportList: ['大巴','高铁','飞机','邮轮'],
+            // addForm: {},
             addForm: {
                 type: '',
                 supplierId: '',
@@ -402,6 +459,7 @@ export default {
             uploadImgUrl: '',// 图片上传地址
             coverImageUrl: '',// 上传所选择的封面图片
             detailImageUrl: '',// 详情图片
+            cityData,// 城市数据
             serviceList: [],// 服务保障绑定列表
             trafficList: [],// 交通方式绑定列表
             dateList: [],// 最早日期和最晚日期
@@ -427,11 +485,22 @@ export default {
                 days: [{ required: true, message: '请输入行程天数', trigger: 'blur' }],
                 stock: [{ required: true, message: '请输入库存量', trigger: 'blur' }]
             },
+            // 表单验证
+            shedulingForm: {
+                general: [{ required: true, message: '请输入行程内容', trigger: 'blur' }],
+                sleep: [{ required: true, message: '请输入住宿安排', trigger: 'blur' }],
+                scenery: [{ required: true, message: '请输入浏览景点', trigger: 'blur' }],
+                breakfast: [{ required: true, message: '请输入早餐安排', trigger: 'blur' }],
+                lunch: [{ required: true, message: '请输入午餐安排', trigger: 'blur' }],
+                dinner: [{ required: true, message: '请输入晚餐安排', trigger: 'blur' }],
+                relax: [{ required: true, message: '请输入自由活动内容', trigger: 'blur' }],
+                attention: [{ required: true, message: '请输入注意事项', trigger: 'blur' }],
+            },
             handleName: '',// 弹框的显示内容
             activeName1: 'first',// 弹框tabs响应页面绑定
             activeName2: 'first',// 行程安排tabs响应页面绑定
             editVisible: false,// 控制弹框显示
-            handleDays: false,// 行程天数输入框是否禁用
+            handleDays: false// 行程天数输入框是否禁用
         };
     },
     created() {
@@ -448,7 +517,6 @@ export default {
             this.api.getListByQuery(that.query).then(res => {
                         console.log(res)
                         if(res.code=="200"){
-                            that.$message.success('成功获取商品列表');
                             that.tableData = res.data.records;
                             that.pageTotal = res.data.total;
                         }else{
@@ -500,10 +568,10 @@ export default {
                 confirmButtonText: '确认',
                 cancelButtonText: '取消'
             }).then(() => {
-                this.api.updateState({goodsId:id,state:'2'}).then(res => {
+                this.api.updateGoodsState({goodsId:id,state:'2'}).then(res => {
                     console.log(res)
                     if(res.code=="200"){
-                        that.$message.error("成功发布商品")
+                        that.$message.success("成功发布商品")
                         that.getListByQuery()
                     }else{
                         that.$message.error("发布商品失败")
@@ -522,13 +590,13 @@ export default {
                 confirmButtonText: '确认',
                 cancelButtonText: '取消'
             }).then(() => {
-                this.api.updateState({goodsId:id,state:'4'}).then(res => {
+                this.api.updateGoodsState({goodsId:id,state:'4'}).then(res => {
                     console.log(res)
                     if(res.code=="200"){
                         that.$message.success("成功下架商品")
                         that.getListByQuery()
                     }else{
-                        that.$message.error("下架商品失败")
+                        that.$message.error(res.message)
                     }
                 })
             })
@@ -789,7 +857,6 @@ export default {
             })
             this.editVisible = true;
         }
-        
     }
 };
 </script>

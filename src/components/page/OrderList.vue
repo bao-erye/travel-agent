@@ -42,12 +42,12 @@
                         border
                         ref="multipleTable"
                 >
-                    <el-table-column prop="id" label="编号" width="80" align="center"></el-table-column>
-                    <el-table-column prop="userName" label="下单用户" width="80" align="center"></el-table-column>
-                    <el-table-column prop="goodsName" label="产品名称" width="240" align="center"></el-table-column>
-                    <el-table-column prop="adultSum" label="成人" width="90" align="center"></el-table-column>
-                    <el-table-column prop="childSum" label="儿童" width="90" align="center"></el-table-column>
-                    <el-table-column prop="contactName"  label="联系人" width="140" align="center">
+                    <el-table-column prop="id" label="编号" width="60" align="center"></el-table-column>
+                    <el-table-column prop="userName" label="下单用户" width="70" align="center"></el-table-column>
+                    <el-table-column prop="goodsName" label="产品名称" width="180" align="center"></el-table-column>
+                    <el-table-column prop="adultSum" label="成人" width="60" align="center"></el-table-column>
+                    <el-table-column prop="childSum" label="儿童" width="60" align="center"></el-table-column>
+                    <el-table-column prop="contactName"  label="联系人" width="120" align="center">
                         <template slot-scope="scope">
                             <ul>
                                 <li style="list-style: none">
@@ -56,7 +56,7 @@
                             </ul>
                         </template>
                     </el-table-column>
-                    <el-table-column label="出行人" width="140" align="center">
+                    <!-- <el-table-column label="出行人" width="140" align="center">
                         <template slot-scope="scope">
                             <ul>
                                 <li v-for="(item, index) in scope.row.passengerList" :key="index" style="list-style: none">
@@ -64,7 +64,7 @@
                                 </li>
                             </ul>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column prop="createTime" label="下单时间" align="center">
                         <template slot-scope="scope">
                             {{new Date(scope.row.createTime).toLocaleString()}}
@@ -130,13 +130,7 @@
                         </el-form-item>  
                         <el-form-item label="联系人电话">
                             <el-input v-model="editForm.contactPhone"></el-input>
-                        </el-form-item>   
-                        <!-- <el-form-item label="出行人">
-                            <el-input v-model="form.provider"></el-input>
-                        </el-form-item>  
-                        <el-form-item label="出行人电话">
-                            <el-input v-model="form.title"></el-input>
-                        </el-form-item>                 -->
+                        </el-form-item>
                         
                     </el-form>
                     <span slot="footer" class="dialog-footer">
@@ -196,7 +190,6 @@
                     console.log(res)
                     if(res.code=="200"){
                         this.isLoading = false
-                        this.$message.success("成功获取订单列表")
                         this.tableData = res.data.data
                         this.pageTotal = res.data.total
                         if(this.tableData != null) {

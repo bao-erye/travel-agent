@@ -60,22 +60,21 @@ export default {
                     this.api.login({name:this.param.name,password:this.param.password}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
-                            localStorage.setItem('userInfo', JSON.stringify(res.data));
+                            localStorage.setItem('userInfo', JSON.stringify(res.data.userInfo));
+                            localStorage.setItem('token', JSON.stringify(res.data.token));
                             that.$message.success('登录成功');
                             // 登录日志
-                            this.api.loginlog({userId:res.data.id}).then(response => {
+                            this.api.loginlog({userId:res.data.userInfo.id}).then(response => {
                                 console.log(response)
                                 if(res.code=="200"){
-                                    that.$message.success('日志添加成功');
                                 }else{
                                     that.$message.error(response.message);
                                 }
                             })
                             // 写入上次登录时间
-                            this.api.lastLogin({id:res.data.id}).then(response1 => {
+                            this.api.lastLogin({id:res.data.userInfo.id}).then(response1 => {
                                 console.log(response1)
                                 if (response1.code=="200") {
-                                    that.$message.success('上次登录时间写入成功');
                                 }else {
                                     that.$message.error(response1.message);
                                 }

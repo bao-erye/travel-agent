@@ -112,11 +112,10 @@ export default {
             this.api.getOrderList(this.query).then(res => {
                 console.log(res)
                     if(res.code=="200") {
-                        this.$message.success("成功获取已结算列表")
                         this.pageTotal = res.data.total
                         this.tableData = res.data.data
                     }else {
-                        this.$message.success("获取已结算列表失败")
+                        this.$message.error("获取已结算列表失败")
                     }
             })
         },

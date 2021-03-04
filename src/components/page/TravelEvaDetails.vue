@@ -28,7 +28,7 @@
                         class="table"
                         ref="multipleTable"
                 >
-                    <el-table-column prop="id" label="产品编号"  align="center" width="75px"></el-table-column>
+                    <el-table-column prop="id" label="编号"  align="center" width="50"></el-table-column>
                     <el-table-column prop="goodsName" label="产品名称"  align="center" ></el-table-column>
                     <el-table-column prop="userName" label="发表用户"  align="center" ></el-table-column>
                     <el-table-column prop="score" label="评分"  align="center"  width="50px"></el-table-column>
@@ -58,11 +58,11 @@
                             {{scoreList[scope.row.scenery-1]}}
                         </template>
                     </el-table-column>
-                    <el-table-column fixed="right" label="操作" width="65px" align="center">
+                    <!-- <el-table-column fixed="right" label="操作" width="65px" align="center">
                         <template>
                             <el-button type="text" icon="el-icon-delete" class="red">删除</el-button>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                 </el-table>
                 <!-- 回复弹框 -->
                 <!-- <el-dialog

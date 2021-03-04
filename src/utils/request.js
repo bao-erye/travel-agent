@@ -5,6 +5,7 @@ import qs from 'qs';
 // import {Indicator, Toast} from 'mint-ui'
 import {Message} from "element-ui"
 import Router from "../router"
+// import { config } from 'vue/types/umd';
 
 const ct1 = 'application/x-www-form-urlencoded;charset=UTF-8';
 const ct2 = "application/json"
@@ -35,28 +36,65 @@ axios.defaults.baseURL = api_base_url
 //   return Promise.reject(err)
 // })
 
-// 添加响应拦截器，响应拦截器会在then/catch处理之前执行
-axios.interceptors.response.use(response => {
-  let timetp = null
-  clearTimeout(timetp)
-  timetp = setTimeout(() => {
-    //Indicator.close()
-    clearTimeout(timetp)
-  }, 500)
-  // 只将请求结果的data字段返回 
-  // if(response.data.code=="403"){
-  //   localStorage.removeItem("userInfo")
-  //   Router.push('/login');
-  // }
-  // else
-    return response.data
-},
-error => {
-  Message.error("服务器异常，请稍后重试！")
+// 添加一个请求拦截器
+axios.interceptors.request.use(function(config) {
+  let token = JSON.parse(localStorage.getItem('token'));
+  config.headers.common['token'] = token;
+  //console.dir(config);
+  return config;
+}, function (error) {
+  // Do something with request error
+  console.info("error: ");
+  console.info(error);
   return Promise.reject(error);
-  // 发生网络错误后会走到这里
-  // promise.resolve("ssss")
+});
+
+// 添加一个响应拦截器
+axios.interceptors.response.use(function(response) {
+  if (response.data && response.data.code) {
+    if (parseInt(response.data.code) === 401 || response.data.message === 'token为空!') {
+      //未登录
+      response.data.message = "登录信息已失效，请重新登录";
+      Message.error(response.data.message);
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("token");
+      Router.push('/login');
+    }
+    if (parseInt(response.data.code) === -1) {
+      Message.error("请求失败");
+    }
+  }
+  return response.data;
+}, function (error) {
+    // Do something with response error
+    console.dir(error);
+    Message.error("服务器连接失败");
+    return Promise.reject(error);
 })
+
+
+// // 添加响应拦截器，响应拦截器会在then/catch处理之前执行
+// axios.interceptors.response.use(response => {
+//   let timetp = null
+//   clearTimeout(timetp)
+//   timetp = setTimeout(() => {
+//     //Indicator.close()
+//     clearTimeout(timetp)
+//   }, 500)
+//   // 只将请求结果的data字段返回 
+//   // if(response.data.code=="403"){
+//   //   localStorage.removeItem("userInfo")
+//   //   Router.push('/login');
+//   // }
+//   // else
+//     return response.data
+// },
+// error => {
+//   Message.error("服务器异常，请稍后重试！")
+//   return Promise.reject(error);
+//   // 发生网络错误后会走到这里
+//   // promise.resolve("ssss")
+// })
 
 //返回一个Promise
 function fetch(url, params,type,ct_type = false) {

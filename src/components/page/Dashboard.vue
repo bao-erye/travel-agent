@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :span="5">
                 <el-card shadow="hover" class="mgb20" style="height:223px;">
                     <div class="user-info">
                         <img :src="iconUrl" class="user-avator" alt />
@@ -18,7 +18,7 @@
                     </div>
                 </el-card>
             </el-col>
-            <el-col :span="16">
+            <el-col :span="13">
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
@@ -90,6 +90,21 @@
                     </el-col>
                 </el-row>
             </el-col>
+            <!-- 热销榜 -->
+            <el-col :span="6">
+                <el-card shadow="hover" class="mgb20" style="height:223px;">
+                    <div class="hot-img">
+                        <img src="../../assets/img/hot.png" class="hot-img-detail"/>
+                        热销榜
+                    </div>
+                    <div class="hot-item" v-for="(hot,index) in topList" :key="index">
+                        <el-badge :value="hot.count" class="item">
+                            {{hot.name}}
+                        </el-badge>
+                    </div>
+                    
+                </el-card>
+            </el-col>
         </el-row>
         <el-row :gutter="20">
             <el-col :span="12">
@@ -123,36 +138,7 @@ export default {
             numRim: 0,
             numOut: 0,
             numSpecial: 0,
-            // data: [
-            //     {
-            //         name: '2018/09/04',
-            //         value: 1083
-            //     },
-            //     {
-            //         name: '2018/09/05',
-            //         value: 941
-            //     },
-            //     {
-            //         name: '2018/09/06',
-            //         value: 1139
-            //     },
-            //     {
-            //         name: '2018/09/07',
-            //         value: 816
-            //     },
-            //     {
-            //         name: '2018/09/08',
-            //         value: 327
-            //     },
-            //     {
-            //         name: '2018/09/09',
-            //         value: 228
-            //     },
-            //     {
-            //         name: '2018/09/10',
-            //         value: 1065
-            //     }
-            // ],
+            topList:[],// 热销榜
             options: {
                 type: 'bar',
                 title: {
@@ -185,7 +171,6 @@ export default {
                     text: '最近几个月各产品销售趋势图'
                 },
                 labels: ['X月', 'X月', 'X月', 'X月', 'X月'],
-                labels: [],
                 datasets: [
                     {
                         label: '国内游',
@@ -213,12 +198,13 @@ export default {
     created(){
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
         this.name = this.userInfo.name
-        this.iconUrl = "http://localhost:8083/image/upload/" + this.userInfo.iconUrl
+        this.iconUrl = this.userInfo.iconUrl
         this.getCount() //获取商品数量
         this.getOrderCount() // 获取订单数量
         this.getHistoryCount() // 获取访问量
         this.getChartDay() // 获取一周各商品销量
         this.getChartMonth() // 获取几月各商品销量
+        this.getTop()// 获取热销榜
     },
     methods: {
         // 获取商品数量
@@ -232,7 +218,7 @@ export default {
                     this.numOut = res.data[2]
                     this.numSpecial = res.data[3]
                 }else{
-                    that.$message.error("国内游商品数量获取失败")
+                    that.$message.error(res.message)
                 }
             })
         },
@@ -244,7 +230,7 @@ export default {
                 if(res.code=="200"){
                     that.numOrder = res.data
                 }else{
-                    that.$message.error("订单数量获取失败")
+                    that.$message.error(res.message)
                 }
             })
         },
@@ -256,7 +242,7 @@ export default {
                 if(res.code=="200"){
                     that.numHistory = res.data
                 }else{
-                    that.$message.error("访问量获取失败")
+                    that.$message.error(res.message)
                 }
             })
         },
@@ -268,7 +254,7 @@ export default {
                 if(res.code=="200"){
                     this.options.datasets=res.data
                 }else{
-                    that.$message.error("销量获取失败")
+                    that.$message.error(res.message)
                 }
             })
         },
@@ -278,11 +264,10 @@ export default {
             this.api.getChartMonth({supplierId:that.userInfo.id}).then(res => {
                 console.log(res)
                 if(res.code=="200"){
-                    that.$message.success("成功获取各月各商品销量")
                     this.options2.labels=res.data.labels
                     this.options2.datasets=res.data.data
                 }else{
-                    that.$message.error("销量获取失败")
+                    that.$message.error(res.message)
                 }
             })
         },
@@ -293,6 +278,18 @@ export default {
                 item.name = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
             });
         },
+        // 获取热门景点top5
+        getTop() {
+            var that = this
+            this.api.getTop().then(res => {
+                console.log(res)
+                if(res.code=="200"){
+                    that.topList = res.data
+                }else{
+                    that.$message.error(res.message)
+                }
+            })
+        }
 
         // handleListener() {
         //     bus.$on('collapse', this.handleBus);
@@ -402,8 +399,8 @@ export default {
 }
 
 .user-avator {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
 }
 
@@ -445,5 +442,25 @@ export default {
 .schart {
     width: 100%;
     height: 300px;
+}
+.hot-img{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    height: 30px;
+    margin-bottom: 10px;
+}
+.hot-img-detail{
+    width: 30px;
+    height: 30px;
+}
+.hot-item{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    height: 30px;
 }
 </style>

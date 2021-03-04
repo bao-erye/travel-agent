@@ -52,7 +52,7 @@ export default {
         },
         avatar() {
             let avatar = JSON.parse(localStorage.getItem('userInfo')).iconUrl;
-            return avatar ? this.base_api_url + "image/upload/" + avatar : this.init_avatar;
+            return avatar ? avatar : this.init_avatar;
         }
     },
     created() {
@@ -64,6 +64,7 @@ export default {
             var that = this;
             if (command == 'loginout') {
                 localStorage.removeItem('userInfo');
+                localStorage.removeItem('token');
                 that.$message.success('您已退出登录');
                 that.$router.push('/login');
             }

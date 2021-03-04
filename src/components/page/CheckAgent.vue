@@ -57,8 +57,10 @@
                             :before-upload="beforeImageUpload"
                         >
                             <div class="el-upload__tip" slot="tip">只能上传jpg文件，且不超过2M</div>
-                            <img v-if="licenseImage" :src="licenseImage" class="avatar" />
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="img-div">
+                                <img v-if="licenseImage" :src="licenseImage" class="img" />
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="法人身份证复印件" prop="representImage">
@@ -77,8 +79,11 @@
                             :before-upload="beforeImageUpload"
                         >
                             <div class="el-upload__tip" slot="tip">只能上传jpg文件，且不超过2M</div>
-                            <img v-if="representImage" :src="representImage" class="avatar" />
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="img-div">
+                                <img v-if="representImage" :src="representImage" class="img" />
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </div>
+                            
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="负责人身份证复印件" prop="chargeImage">
@@ -97,8 +102,11 @@
                             :before-upload="beforeImageUpload"
                         >
                             <div class="el-upload__tip" slot="tip">只能上传jpg文件，且不超过2M</div>
-                            <img v-if="chargeImage" :src="chargeImage" class="avatar" />
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            <div class="img-div">
+                                <img v-if="chargeImage" :src="chargeImage" class="img" />
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </div>
+                            
                         </el-upload>
                     </el-form-item>
                     <el-form-item>
@@ -146,11 +154,10 @@ export default {
             this.api.getQualification({supplierId:this.userInfo.id}).then(res => {
                 console.log(res)
                 if(res.code=="200") {
-                    this.$message.success("成功获取材料")
                     this.form = res.data
-                    this.licenseImage = "http://localhost:8083/image/upload/" + this.form.licenseImage;
-                    this.representImage = "http://localhost:8083/image/upload/" + this.form.representImage;
-                    this.chargeImage = "http://localhost:8083/image/upload/" + this.form.chargeImage;
+                    this.licenseImage = this.form.licenseImage;
+                    this.representImage = this.form.representImage;
+                    this.chargeImage = this.form.chargeImage;
                 }else{
                     this.$message.error(res.message)
                 }
@@ -220,5 +227,12 @@ export default {
 }
 .el-form-item__label {
     width: 120px !important;
+}
+.img-div{
+    height: 300px;
+    width: 100%;
+}
+.img{
+    width: 100%;
 }
 </style>

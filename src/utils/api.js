@@ -31,9 +31,6 @@ export default {
         return fetch(`supplier/updateIcon`, params, 'post')
     },// 修改头像
 
-    // loginOut(params) {
-    //     return fetch(`web/out_login`, params, 'post');
-    // },//登出
 
     cashout(params) {
         return fetch(`supplier/cash`, params, 'get')
@@ -49,7 +46,7 @@ export default {
         return fetch(`goods/query`, params, 'get')
     },// 根据查询条件查询商品列表
 
-    updateState(params) {
+    updateGoodsState(params) {
         return fetch(`goods/state`, params, 'get')
     },// 更新商品状态
 
@@ -76,6 +73,10 @@ export default {
     getScheduling(params) {
         return fetch(`scheduling/get`, params, 'get')
     },//根据商品ID获取行程信息
+
+    getTop(params){
+        return fetch(`goods/hotspot`, params, 'get')
+    },// 获取热点商品top5
 
     //--------------------------------------------------------订单管理------------------------------------
 

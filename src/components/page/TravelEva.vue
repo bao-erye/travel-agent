@@ -29,8 +29,8 @@
                         class="table"
                         ref="multipleTable"
                 >
-                    <el-table-column prop="id" label="产品编号"  align="center"></el-table-column>
-                    <el-table-column prop="name" label="产品名称"  align="center"></el-table-column>
+                    <el-table-column prop="id" label="产品编号" width="80" align="center"></el-table-column>
+                    <el-table-column prop="name" label="产品名称" width="300" align="center"></el-table-column>
                     <el-table-column prop="comments" label="评价总数"  align="center"></el-table-column>
                     <el-table-column prop="score" label="总体评分"  align="center"></el-table-column>
                     <el-table-column fixed="right" label="操作" width="120" align="center">
@@ -92,13 +92,12 @@
                 that.api.getGoodsComments(that.query).then(res => {
                     console.log(res)
                     if(res.code=="200") {
-                        this.$message.success("成功获取商品列表")
                         that.pageTotal = res.data.total
                         that.tableData = res.data.records
                         that.isLoading = false
                         
                     }else {
-                        this.$message.success("获取商品列表失败")
+                        this.$message.error(res.messsage)
                     }
                     
                 })
