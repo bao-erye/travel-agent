@@ -92,7 +92,7 @@ export default {
                 {
                     icon: 'el-icon-postcard',
                     index: 'mybill',
-                    title: '我的账单'
+                    title: '财务分析'
                 },
                 // {
                 //     icon: 'el-icon-tickets',

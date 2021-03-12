@@ -68,7 +68,7 @@
                     goodsId: '',
                     name: '',
                     current: 1,
-                    size: 4
+                    size: 7
                 },
                 tableData: [],// 表格数据
                 pageTotal: 10,// 总条数
@@ -97,7 +97,7 @@
                         that.isLoading = false
                         
                     }else {
-                        this.$message.error(res.messsage)
+                        this.$message.error(res.message)
                     }
                     
                 })

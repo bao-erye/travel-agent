@@ -56,8 +56,8 @@
                         {{scope.row.serviceEnsure}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="days" label="行程天数" width="60" align="center"></el-table-column>
-                <el-table-column label="详情图片" width="240" align="center">
+                <el-table-column prop="days" label="行程天数" width="80" align="center"></el-table-column>
+                <el-table-column label="详情图片" width="120" align="center">
                     <template slot-scope="scope">
                         <!-- <el-carousel :interval="4000" type="card" height="70px" indicator-position="none">
                             <el-carousel-item v-for="(img, i) in scope.row.imgList" :key="i">

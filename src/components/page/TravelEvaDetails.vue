@@ -140,11 +140,10 @@ import { Form } from 'element-ui';
                 this.api.getCommentByQuery(this.query).then(res => {
                     console.log(res)
                     if(res.code=="200"){
-                        this.$message.success("成功获取评价列表")
                         this.tableData = res.data.data
                         this.pageTotal = res.data.total
                     }else{
-                        this.$message.error("获取评价列表失败")
+                        this.$message.error(res.message)
                     }
                 })
             },

@@ -55,7 +55,7 @@ axios.interceptors.response.use(function(response) {
     if (parseInt(response.data.code) === 401 || response.data.message === 'token为空!') {
       //未登录
       response.data.message = "登录信息已失效，请重新登录";
-      Message.error(response.data.message);
+      // Message.error(response.data.message);
       localStorage.removeItem("userInfo");
       localStorage.removeItem("token");
       Router.push('/login');

@@ -59,7 +59,7 @@ export default new Router({
                 {
                     path: '/mybill',
                     component: () => import('../components/page/MyBill.vue'),
-                    meta: { title: '我的账单', requireAuth: true }
+                    meta: { title: '财务分析', requireAuth: true }
                 },
                 {
                     path: '/travelEva',

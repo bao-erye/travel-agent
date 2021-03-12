@@ -36,6 +36,10 @@ export default {
         return fetch(`supplier/cash`, params, 'get')
     },// 提现
 
+    testToken(params) {
+        return fetch(`supplier/test`, params, 'get')
+    },// token验证
+
     //-------------------------------------------------------商品管理-------------------------------------
 
     getCount(params) {
@@ -111,6 +115,13 @@ export default {
     updateOrder(params) {
         return fetch(`order/update`, params, 'post',true)
     },//更新订单状态
+
+    sumType(params) {
+        return fetch(`order/sumType`, params, 'get')
+    },// 获取各类产品销售额
+    sumMonth(params) {
+        return fetch(`order/sumMonth`, params, 'get')
+    },// 获取近几月销售额
 
     //-------------------------------------------------------评价管理-------------------------------------
     getCommentCount(params) {

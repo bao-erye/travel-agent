@@ -4,7 +4,7 @@
             <el-col :span="5">
                 <el-card shadow="hover" class="mgb20" style="height:223px;">
                     <div class="user-info">
-                        <img :src="iconUrl" class="user-avator" alt />
+                        <img :src="iconUrl" class="user-avator" alt/>
                         <div class="user-info-cont">
                             <div class="user-info-name">{{name}}</div>
                             <div>{{role}}</div>
@@ -199,14 +199,26 @@ export default {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
         this.name = this.userInfo.name
         this.iconUrl = this.userInfo.iconUrl
-        this.getCount() //获取商品数量
-        this.getOrderCount() // 获取订单数量
-        this.getHistoryCount() // 获取访问量
-        this.getChartDay() // 获取一周各商品销量
-        this.getChartMonth() // 获取几月各商品销量
-        this.getTop()// 获取热销榜
+        this.test() // token验证，验证成功后再发数据请求
+        
     },
     methods: {
+        // token验证
+        test() {
+            var that = this
+            this.api.testToken().then(res => {
+                if(res.code == "200"){
+                    this.getCount() //获取商品数量
+                    this.getOrderCount() // 获取订单数量
+                    this.getHistoryCount() // 获取访问量
+                    this.getChartDay() // 获取一周各商品销量
+                    this.getChartMonth() // 获取几月各商品销量
+                    this.getTop()// 获取热销榜
+                }else{
+                    that.$message.error(res.message)
+                }
+            })
+        },
         // 获取商品数量
         getCount() {
             var that = this

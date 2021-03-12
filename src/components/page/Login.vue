@@ -100,7 +100,7 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    background-image: url(../../assets/img/bg.png);
+    background-image: url(../../assets/img/pic.jpg);
     background-size: 100%;
 }
 .ms-title {
@@ -116,9 +116,10 @@ export default {
     left: 50%;
     top: 50%;
     width: 350px;
-    margin: -190px 0 0 -175px;
+    margin: -190px 0 0 -175px;      
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.3);
+    background: rgba(102, 98, 98, 0.3);
     overflow: hidden;
 }
 .ms-content {
@@ -140,6 +141,6 @@ export default {
 .operate {
     text-align:left;
     font-size:13px;
-    color:#303133;
+    color:#fff;
 }
 </style>

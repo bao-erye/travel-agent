@@ -94,8 +94,8 @@
                         <el-button v-if="scope.row.state == 5" type="text" style="color:#67C23A" icon="el-icon-receiving primary" @click="receiveMoney(scope.row.id)">退款</el-button>
                         <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-receiving primary">退款</el-button>
                         <!-- 拒绝接单操作 -->
-                        <el-button v-if="scope.row.state == 5" type="text" style="color:#67C23A" icon="el-icon-close danger" @click="refuseMoney(scope.row.id)">拒绝退款</el-button>
-                        <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-close danger">拒绝退款</el-button>
+                        <!-- <el-button v-if="scope.row.state == 5" type="text" style="color:#67C23A" icon="el-icon-close danger" @click="refuseMoney(scope.row.id)">拒绝退款</el-button>
+                        <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-close danger">拒绝退款</el-button> -->
                         <!-- 编辑 -->
                         <el-button v-if="scope.row.state == 3" type="text" style="color:#409EFF" icon="el-icon-edit wrong" @click="handleEdit(scope.$index,scope.row)">编辑</el-button>
                         <el-button v-else disabled type="text" style="color:#909399" icon="el-icon-edit wrong">编辑</el-button>
@@ -173,7 +173,7 @@
                 ],
                 isLoading: false,//控制显示加载中
                 // 订单状态
-                stateList: ['待付款', '待接单', '待出行', '已完成', '退款申请', '取消退款申请'],
+                stateList: ['待付款', '待接单', '待出行', '已完成', '退款申请', '已处理退款申请'],
                 editForm: {},//商品编辑弹框
                 
             };
@@ -205,7 +205,7 @@
                             
                         }
                     }else{
-                        this.$message.error("获取订单列表失败")
+                        this.$message.error(res.message)
                     }
                 })
             },
@@ -250,7 +250,7 @@
                     confirmButtonText: '确认',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this.api.updateState({orderId:id,state:'4'}).then(res => {
+                    this.api.updateState({orderId:id,state:'7'}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
                             this.getOrderList()
@@ -270,7 +270,7 @@
                     confirmButtonText: '确认',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    this.api.updateState({orderId:id,state:'4'}).then(res => {
+                    this.api.updateState({orderId:id,state:'6'}).then(res => {
                         console.log(res)
                         if(res.code=="200"){
                             this.getOrderList()
